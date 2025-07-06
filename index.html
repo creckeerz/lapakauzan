@@ -1456,6 +1456,11 @@
             document.getElementById('contactEmail').value = currentSettings.contactEmail;
         }
 
+        function refreshData() {
+            showMessage('Memuat ulang data...', 'success');
+            loadCategories();
+        }
+
         // Handle login form submission
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1777,13 +1782,8 @@
             showMessage('Form produk telah direset.', 'success');
         }
 
-        function refreshData() {
-            showMessage('Memuat ulang data...', 'success');
-            loadCategories();
-        }
-
         // Close modal when clicking outside
-        window.onclick = function(event) {
+        window.addEventListener('click', function(event) {
             const loginModal = document.getElementById('loginModal');
             const adminModal = document.getElementById('adminModal');
             
@@ -1793,6 +1793,94 @@
             if (event.target === adminModal) {
                 closeAdminPanel();
             }
+        });
+
+        // Global event listeners setup
+        function setupEventListeners() {
+            // Handle login form submission
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const password = formData.get('password');
+                
+                if (password === currentSettings.adminPassword) {
+                    isLoggedIn = true;
+                    closeLoginModal();
+                    showAdminModal();
+                    showMessage('Login berhasil! Selamat datang di Admin Panel.', 'success');
+                } else {
+                    showMessage('Password salah! Silakan coba lagi.', 'error');
+                    document.getElementById('adminPassword').focus();
+                }
+            });
+
+            // Handle product form submission
+            document.getElementById('productForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const productData = {
+                    category: formData.get('category'),
+                    name: formData.get('productName'),
+                    price: parseInt(formData.get('price')),
+                    description: formData.get('description'),
+                    id: Date.now() // Generate simple ID
+                };
+                
+                // Add product to local categories
+                if (categories[productData.category]) {
+                    categories[productData.category].products.push(productData);
+                    
+                    // Reload categories display
+                    loadCategories();
+                    
+                    // Reset form
+                    e.target.reset();
+                    
+                    showMessage(`Produk "${productData.name}" berhasil ditambahkan!`, 'success');
+                } else {
+                    showMessage('Kategori tidak valid!', 'error');
+                }
+            });
+
+            // Handle settings form submission
+            document.getElementById('settingsForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                
+                // Update settings
+                if (formData.get('storeName')) {
+                    currentSettings.storeName = formData.get('storeName');
+                    document.querySelector('.store-name').textContent = currentSettings.storeName;
+                }
+                
+                if (formData.get('whatsappNumber')) {
+                    currentSettings.whatsappNumber = formData.get('whatsappNumber');
+                }
+                
+                if (formData.get('contactEmail')) {
+                    currentSettings.contactEmail = formData.get('contactEmail');
+                    // Update footer contact info
+                    const contactInfo = document.querySelector('.contact-info');
+                    if (contactInfo) {
+                        contactInfo.innerHTML = contactInfo.innerHTML.replace(/info@xlaxisstore\.com/g, currentSettings.contactEmail);
+                    }
+                }
+                
+                if (formData.get('newAdminPassword')) {
+                    currentSettings.adminPassword = formData.get('newAdminPassword');
+                    document.getElementById('newAdminPassword').value = '';
+                }
+                
+                showMessage('Pengaturan berhasil disimpan!', 'success');
+            });
+
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                handleSearch(e.target.value);
+            });
         }
 
         // Smooth scroll effect for header
