@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XL/AXIS Store - Kuota Internet Murah</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .logo i {
+            color: #667eea;
+        }
+
+        .admin-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+        }
+
+        /* Categories */
+        .categories {
+            background: white;
+            padding: 3rem 0;
+            margin-top: -50px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .categories h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #333;
+            font-size: 2.5rem;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .category-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .category-desc {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .product-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .product-card:hover {
+            background: #e9ecef;
+            transform: scale(1.02);
+        }
+
+        .product-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            color: #667eea;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .buy-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Features */
+        .features {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 4rem 0;
+        }
+
+        .features h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #333;
+            font-size: 2.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            line-height: 1.6;
+        }
+
+        .footer-section a:hover {
+            color: #667eea;
+        }
+
+        /* Admin Panel Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .close {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-wifi"></i>
+                    <span>XL/AXIS Store</span>
+                </div>
+                <button class="admin-btn" onclick="openAdminPanel()">
+                    <i class="fas fa-cog"></i> Admin Panel
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Kuota Internet XL/AXIS Termurah</h1>
+            <p>Dapatkan kuota internet berkualitas dengan harga terjangkau untuk semua kebutuhan Anda</p>
+            <div class="search-box">
+                <input type="text" placeholder="Cari paket kuota yang Anda butuhkan..." id="searchInput">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories">
+        <div class="container">
+            <h2>Kategori Produk</h2>
+            <div class="category-grid" id="categoryGrid">
+                <!-- Categories will be loaded here -->
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Memuat data produk...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="container">
+            <h2>Mengapa Memilih Kami?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Proses Cepat</h3>
+                    <p>Kuota langsung masuk dalam hitungan detik setelah pembayaran berhasil</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Terpercaya</h3>
+                    <p>Kami telah melayani ribuan pelanggan dengan tingkat kepuasan 99%</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Support 24/7</h3>
+                    <p>Tim customer service siap membantu Anda kapan saja</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Kontak Kami</h3>
+                    <p><i class="fas fa-phone"></i> +62 812-3456-7890</p>
+                    <p><i class="fas fa-envelope"></i> info@xlaxisstore.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Jakarta, Indonesia</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Jam Operasional</h3>
+                    <p>Senin - Minggu: 08:00 - 22:00 WIB</p>
+                    <p>Respon otomatis 24 jam</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Ikuti Kami</h3>
+                    <p>
+                        <a href="#"><i class="fab fa-facebook"></i> Facebook</a><br>
+                        <a href="#"><i class="fab fa-instagram"></i> Instagram</a><br>
+                        <a href="#"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    </p>
+                </div>
+            </div>
+            <p>&copy; 2025 XL/AXIS Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Admin Panel Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Admin Panel - Kelola Produk</h2>
+                <span class="close" onclick="closeAdminPanel()">&times;</span>
+            </div>
+            
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="category">Kategori:</label>
+                    <select id="category" name="category" required>
+                        <option value="">Pilih Kategori</option>
+                        <option value="Official XL / AXIS">Official XL / AXIS</option>
+                        <option value="XL Circle">XL Circle</option>
+                        <option value="Paket Harian">Paket Harian</option>
+                        <option value="Perpanjangan Masa Aktif">Perpanjangan Masa Aktif</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productName">Nama Produk:</label>
+                    <input type="text" id="productName" name="productName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="price">Harga:</label>
+                    <input type="number" id="price" name="price" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Deskripsi:</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Simpan Produk
+                </button>
+                <button type="button" class="btn-secondary" onclick="closeAdminPanel()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample data structure
+        const categories = {
+            "Official XL / AXIS": {
+                icon: "fas fa-star",
+                description: "Paket resmi dari XL/AXIS dengan garansi kualitas terbaik",
+                products: [
+                    { name: "XL Combo Flex L", price: 85000, description: "30GB + Unlimited Apps" },
+                    { name: "AXIS Bronet 16GB", price: 45000, description: "16GB 30 hari" }
+                ]
+            },
+            "XL Circle": {
+                icon: "fas fa-circle",
+                description: "Paket khusus XL Circle dengan benefit eksklusif",
+                products: [
+                    { name: "XL Circle 25GB", price: 60000, description: "25GB + Bonus Entertainment" },
+                    { name: "XL Circle 50GB", price: 100000, description: "50GB + Unlimited YouTube" }
+                ]
+            },
+            "Paket Harian": {
+                icon: "fas fa-calendar-day",
+                description: "Paket kuota untuk kebutuhan harian Anda",
+                products: [
+                    { name: "XL Harian 1GB", price: 8000, description: "1GB berlaku 1 hari" },
+                    { name: "AXIS Harian 2GB", price: 12000, description: "2GB berlaku 1 hari" }
+                ]
+            },
+            "Perpanjangan Masa Aktif": {
+                icon: "fas fa-clock",
+                description: "Perpanjang masa aktif kartu Anda tanpa tambahan kuota",
+                products: [
+                    { name: "Perpanjangan 30 Hari", price: 5000, description: "Masa aktif 30 hari" },
+                    { name: "Perpanjangan 90 Hari", price: 12000, description: "Masa aktif 90 hari" }
+                ]
+            }
+        };
+
+        // Load categories and products
+        function loadCategories() {
+            const categoryGrid = document.getElementById('categoryGrid');
+            const loading = document.getElementById('loading');
+            
+            // Show loading
+            loading.style.display = 'block';
+            
+            // Simulate loading delay
+            setTimeout(() => {
+                categoryGrid.innerHTML = '';
+                
+                Object.entries(categories).forEach(([categoryName, categoryData]) => {
+                    const categoryCard = document.createElement('div');
+                    categoryCard.className = 'category-card';
+                    
+                    const productsHtml = categoryData.products.map(product => `
+                        <div class="product-card">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">Rp ${product.price.toLocaleString()}</div>
+                            <div style="color: #666; font-size: 0.9rem; margin: 0.5rem 0;">${product.description}</div>
+                            <button class="buy-btn" onclick="buyProduct('${product.name}', ${product.price})">
+                                <i class="fas fa-shopping-cart"></i> Beli
+                            </button>
+                        </div>
+                    `).join('');
+                    
+                    categoryCard.innerHTML = `
+                        <div class="category-icon">
+                            <i class="${categoryData.icon}"></i>
+                        </div>
+                        <div class="category-title">${categoryName}</div>
+                        <div class="category-desc">${categoryData.description}</div>
+                        <div class="product-grid">
+                            ${productsHtml}
+                        </div>
+                    `;
+                    
+                    categoryGrid.appendChild(categoryCard);
+                });
+                
+                // Hide loading
+                loading.style.display = 'none';
+            }, 1000);
+        }
+
+        // Admin panel functions
+        function openAdminPanel() {
+            document.getElementById('adminModal').style.display = 'block';
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminModal').style.display = 'none';
+            document.getElementById('productForm').reset();
+        }
+
+        // Handle product form submission
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const productData = {
+                category: formData.get('category'),
+                name: formData.get('productName'),
+                price: parseInt(formData.get('price')),
+                description: formData.get('description')
+            };
+            
+            // Here you would normally send data to Google Apps Script
+            console.log('Product data:', productData);
+            
+            // Add product to local categories (for demo)
+            if (categories[productData.category]) {
+                categories[productData.category].products.push({
+                    name: productData.name,
+                    price: productData.price,
+                    description: productData.description
+                });
+            }
+            
+            // Reload categories
+            loadCategories();
+            
+            // Close modal
+            closeAdminPanel();
+            
+            // Show success message
+            alert('Produk berhasil ditambahkan!');
+        });
+
+        // Buy product function
+        function buyProduct(productName, price) {
+            const whatsappNumber = '6281234567890'; // Replace with your WhatsApp number
+            const message = `Halo, saya ingin membeli ${productName} dengan harga Rp ${price.toLocaleString()}`;
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const productCards = document.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                const productName = card.querySelector('.product-name').textContent.toLowerCase();
+                const productDesc = card.querySelector('.product-card div:nth-child(3)').textContent.toLowerCase();
+                
+                if (productName.includes(searchTerm) || productDesc.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('adminModal');
+            if (event.target == modal) {
+                closeAdminPanel();
+            }
+        }
+
+        // Load categories on page load
+        window.addEventListener('load', loadCategories);
+    </script>
+</body>
+</html>
