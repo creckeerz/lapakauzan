@@ -428,6 +428,128 @@
         .product-category-badge i {
             margin-right: 4px;
         }
+        .admin-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .admin-section h4 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-section h4 i {
+            color: #667eea;
+        }
+
+        /* Product List Styles */
+        .product-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .product-item:hover {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .product-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .product-info h5 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-category {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-edit {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(45deg, #dc3545, #fd7e14);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .empty-products {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-products i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             border-radius: 20px;
             padding: 1.8rem;
@@ -1088,40 +1210,53 @@
 
             <div class="tab-content active" id="products-tab">
                 <h3>Kelola Produk</h3>
-                <form id="productForm">
-                    <div class="form-group">
-                        <label for="category">Kategori:</label>
-                        <select id="category" name="category" required>
-                            <option value="">Pilih Kategori</option>
-                            <option value="Official XL / AXIS">Official XL / AXIS</option>
-                            <option value="XL Circle">XL Circle</option>
-                            <option value="Paket Harian">Paket Harian</option>
-                            <option value="Perpanjangan Masa Aktif">Perpanjangan Masa Aktif</option>
-                        </select>
+                
+                <!-- Add Product Form -->
+                <div class="admin-section">
+                    <h4><i class="fas fa-plus-circle"></i> Tambah Produk Baru</h4>
+                    <form id="productForm">
+                        <div class="form-group">
+                            <label for="category">Kategori:</label>
+                            <select id="category" name="category" required>
+                                <option value="">Pilih Kategori</option>
+                                <option value="Official XL / AXIS">Official XL / AXIS</option>
+                                <option value="XL Circle">XL Circle</option>
+                                <option value="Paket Harian">Paket Harian</option>
+                                <option value="Perpanjangan Masa Aktif">Perpanjangan Masa Aktif</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productName">Nama Produk:</label>
+                            <input type="text" id="productName" name="productName" required placeholder="Contoh: XL Combo Flex L">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="price">Harga:</label>
+                            <input type="number" id="price" name="price" required placeholder="85000" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description">Deskripsi:</label>
+                            <textarea id="description" name="description" rows="3" placeholder="30GB + Unlimited Apps"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Simpan Produk
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="resetProductForm()">
+                            <i class="fas fa-refresh"></i> Reset Form
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Product List -->
+                <div class="admin-section">
+                    <h4><i class="fas fa-list"></i> Daftar Produk</h4>
+                    <div id="productsList">
+                        <!-- Products will be loaded here -->
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="productName">Nama Produk:</label>
-                        <input type="text" id="productName" name="productName" required placeholder="Contoh: XL Combo Flex L">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="price">Harga:</label>
-                        <input type="number" id="price" name="price" required placeholder="85000" min="0">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="description">Deskripsi:</label>
-                        <textarea id="description" name="description" rows="3" placeholder="30GB + Unlimited Apps"></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-save"></i> Simpan Produk
-                    </button>
-                    <button type="button" class="btn-secondary" onclick="resetProductForm()">
-                        <i class="fas fa-refresh"></i> Reset Form
-                    </button>
-                </form>
+                </div>
             </div>
 
             <div class="tab-content" id="orders-tab">
@@ -1608,6 +1743,169 @@
             document.getElementById('storeName').value = currentSettings.storeName;
             document.getElementById('whatsappNumber').value = currentSettings.whatsappNumber;
             document.getElementById('contactEmail').value = currentSettings.contactEmail;
+            
+            // Load products list
+            loadProductsList();
+        }
+
+        function loadProductsList() {
+            const productsList = document.getElementById('productsList');
+            if (!productsList) return;
+
+            // Clear current list
+            productsList.innerHTML = '';
+
+            // Check if there are any products
+            let hasProducts = false;
+            let allProducts = [];
+
+            // Collect all products from all categories
+            Object.entries(categories).forEach(([categoryName, categoryData]) => {
+                categoryData.products.forEach(product => {
+                    allProducts.push({
+                        ...product,
+                        category: categoryName
+                    });
+                    hasProducts = true;
+                });
+            });
+
+            if (!hasProducts) {
+                productsList.innerHTML = `
+                    <div class="empty-products">
+                        <i class="fas fa-box-open"></i>
+                        <h5>Belum ada produk</h5>
+                        <p>Tambahkan produk pertama Anda menggunakan form di atas.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort products by category and name
+            allProducts.sort((a, b) => {
+                if (a.category !== b.category) {
+                    return a.category.localeCompare(b.category);
+                }
+                return a.name.localeCompare(b.name);
+            });
+
+            // Create product items
+            allProducts.forEach(product => {
+                const productItem = document.createElement('div');
+                productItem.className = 'product-item';
+                productItem.innerHTML = `
+                    <div class="product-item-header">
+                        <div class="product-info">
+                            <div class="product-category">${product.category}</div>
+                            <h5>${product.name}</h5>
+                            <div class="product-price">${formatPrice(product.price)}</div>
+                            <div class="product-description">${product.description}</div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-edit" onclick="editProduct(${product.id})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn-delete" onclick="deleteProduct(${product.id})">
+                                <i class="fas fa-trash"></i> Hapus
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productsList.appendChild(productItem);
+            });
+        }
+
+        function editProduct(productId) {
+            // Find the product
+            let productToEdit = null;
+            let productCategory = '';
+
+            Object.entries(categories).forEach(([categoryName, categoryData]) => {
+                const found = categoryData.products.find(p => p.id === productId);
+                if (found) {
+                    productToEdit = found;
+                    productCategory = categoryName;
+                }
+            });
+
+            if (!productToEdit) {
+                showMessage('Produk tidak ditemukan!', 'error');
+                return;
+            }
+
+            // Fill form with product data
+            document.getElementById('category').value = productCategory;
+            document.getElementById('productName').value = productToEdit.name;
+            document.getElementById('price').value = productToEdit.price;
+            document.getElementById('description').value = productToEdit.description;
+
+            // Store product ID for editing
+            document.getElementById('productForm').setAttribute('data-edit-id', productId);
+            document.getElementById('productForm').setAttribute('data-edit-category', productCategory);
+
+            // Change button text
+            const submitBtn = document.querySelector('#productForm button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Produk';
+
+            // Scroll to form
+            document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
+            
+            showMessage('Mode edit: Ubah data produk dan klik "Update Produk"', 'success');
+        }
+
+        function deleteProduct(productId) {
+            // Find the product
+            let productToDelete = null;
+            let productCategory = '';
+
+            Object.entries(categories).forEach(([categoryName, categoryData]) => {
+                const found = categoryData.products.find(p => p.id === productId);
+                if (found) {
+                    productToDelete = found;
+                    productCategory = categoryName;
+                }
+            });
+
+            if (!productToDelete) {
+                showMessage('Produk tidak ditemukan!', 'error');
+                return;
+            }
+
+            // Confirm deletion
+            const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus produk "${productToDelete.name}"?\n\nTindakan ini tidak dapat dibatalkan.`);
+            
+            if (confirmDelete) {
+                // Remove product from category
+                const categoryProducts = categories[productCategory].products;
+                const productIndex = categoryProducts.findIndex(p => p.id === productId);
+                
+                if (productIndex > -1) {
+                    categoryProducts.splice(productIndex, 1);
+                    
+                    // Reload displays
+                    loadCategories();
+                    loadProductsList();
+                    
+                    showMessage(`Produk "${productToDelete.name}" berhasil dihapus!`, 'success');
+                } else {
+                    showMessage('Gagal menghapus produk!', 'error');
+                }
+            }
+        }
+
+        function resetProductForm() {
+            const form = document.getElementById('productForm');
+            form.reset();
+            
+            // Remove edit mode attributes
+            form.removeAttribute('data-edit-id');
+            form.removeAttribute('data-edit-category');
+            
+            // Reset button text
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Produk';
+            
+            showMessage('Form produk telah direset.', 'success');
         }
 
         function refreshData() {
@@ -1640,27 +1938,70 @@
                 e.preventDefault();
                 
                 const formData = new FormData(e.target);
+                const form = e.target;
+                
+                // Check if we're editing or adding
+                const editId = form.getAttribute('data-edit-id');
+                const editCategory = form.getAttribute('data-edit-category');
+                
                 const productData = {
                     category: formData.get('category'),
                     name: formData.get('productName'),
                     price: parseInt(formData.get('price')),
                     description: formData.get('description'),
-                    id: Date.now() // Generate simple ID
+                    id: editId ? parseInt(editId) : Date.now() // Use existing ID for edit, new ID for add
                 };
                 
-                // Add product to local categories
-                if (categories[productData.category]) {
-                    categories[productData.category].products.push(productData);
+                if (editId) {
+                    // Edit existing product
                     
-                    // Reload categories display
-                    loadCategories();
+                    // Remove from old category if category changed
+                    if (editCategory !== productData.category) {
+                        const oldCategoryProducts = categories[editCategory].products;
+                        const oldIndex = oldCategoryProducts.findIndex(p => p.id === parseInt(editId));
+                        if (oldIndex > -1) {
+                            oldCategoryProducts.splice(oldIndex, 1);
+                        }
+                        
+                        // Add to new category
+                        if (categories[productData.category]) {
+                            categories[productData.category].products.push(productData);
+                        }
+                    } else {
+                        // Update in same category
+                        const categoryProducts = categories[productData.category].products;
+                        const productIndex = categoryProducts.findIndex(p => p.id === parseInt(editId));
+                        if (productIndex > -1) {
+                            categoryProducts[productIndex] = productData;
+                        }
+                    }
                     
-                    // Reset form
-                    e.target.reset();
+                    showMessage(`Produk "${productData.name}" berhasil diperbarui!`, 'success');
                     
-                    showMessage(`Produk "${productData.name}" berhasil ditambahkan!`, 'success');
+                    // Reset form to add mode
+                    form.removeAttribute('data-edit-id');
+                    form.removeAttribute('data-edit-category');
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Produk';
+                    
                 } else {
-                    showMessage('Kategori tidak valid!', 'error');
+                    // Add new product
+                    if (categories[productData.category]) {
+                        categories[productData.category].products.push(productData);
+                        showMessage(`Produk "${productData.name}" berhasil ditambahkan!`, 'success');
+                    } else {
+                        showMessage('Kategori tidak valid!', 'error');
+                        return;
+                    }
+                }
+                
+                // Reload displays
+                loadCategories();
+                loadProductsList();
+                
+                // Reset form
+                if (!editId) {
+                    e.target.reset();
                 }
             });
 
@@ -1705,7 +2046,17 @@
 
         // Utility functions for admin
         function resetProductForm() {
-            document.getElementById('productForm').reset();
+            const form = document.getElementById('productForm');
+            form.reset();
+            
+            // Remove edit mode attributes
+            form.removeAttribute('data-edit-id');
+            form.removeAttribute('data-edit-category');
+            
+            // Reset button text
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Produk';
+            
             showMessage('Form produk telah direset.', 'success');
         }
 
