@@ -617,46 +617,37 @@
         }
 
         .tab-button {
-  background: none;
-  border: none;
-  padding: 1rem 1.5rem;
-  cursor: pointer;
-  font-weight: 600;
-  color: #555;
-  transition: all 0.3s ease;
-  border-radius: 12px;
-  flex: 1;
-  text-align: center;
-  font-size: 1rem;
-  outline: none;
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    flex: 1;
+    text-align: center;
 }
 
 .tab-button:hover {
-  color: #222;
-  background-color: rgba(102, 126, 234, 0.1); /* nuansa hover lembut */
+    color: #333;
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .tab-button.active {
-  color: white;
-  background: linear-gradient(45deg, #667eea, #764ba2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: scale(1.02);
+    color: white;
+    background: linear-gradient(45deg, #667eea, #764ba2);
 }
 
 .tab-content {
-  display: none;
-  padding: 1rem 1.5rem;
-  animation: fadeIn 0.3s ease;
+    display: none;
+    padding: 0 2rem 2rem;
 }
 
 .tab-content.active {
-  display: block;
+    display: block;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 
         /* Loading Animation */
