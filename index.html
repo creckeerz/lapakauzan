@@ -1,7 +1,7 @@
 <script>
         // Configuration for Google Apps Script
         const CONFIG = {
-            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyZp8MEoRNFJhgJ_ky75iB3rwWgyiiut72X0Vlv_F_Vr5022GZJfau9-Ceb1wX8Rh_lCw/exec', // Replace with your actual URL
+            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', // Replace with your actual URL
             ENDPOINTS: {
                 GET_PRODUCTS: 'getProducts',
                 ADD_PRODUCT: 'addProduct',
@@ -12,35 +12,35 @@
             }
         };
 
-        // API Helper functions
+        // API Helper functions (Fixed for Google Apps Script)
         async function apiRequest(endpoint, data = null, method = 'GET') {
             try {
-                const url = method === 'GET' 
-                    ? `${CONFIG.APPS_SCRIPT_URL}?action=${endpoint}`
-                    : CONFIG.APPS_SCRIPT_URL;
-
-                const options = {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    }
-                };
-
-                if (method === 'POST' && data) {
-                    const formData = new URLSearchParams();
-                    formData.append('action', endpoint);
-                    formData.append('data', JSON.stringify(data));
-                    options.body = formData;
-                }
-
-                const response = await fetch(url, options);
-                const result = await response.text();
+                let url = CONFIG.APPS_SCRIPT_URL;
                 
-                try {
-                    return JSON.parse(result);
-                } catch (e) {
-                    console.error('Response parsing error:', result);
-                    return { success: false, message: 'Invalid response format' };
+                if (method === 'GET') {
+                    url += `?action=${endpoint}`;
+                    const response = await fetch(url);
+                    const text = await response.text();
+                    return JSON.parse(text);
+                } else {
+                    // POST request - Use FormData for Google Apps Script
+                    const formData = new FormData();
+                    formData.append('action', endpoint);
+                    
+                    if (data) {
+                        // For Google Apps Script, send data as individual form fields
+                        Object.keys(data).forEach(key => {
+                            formData.append(key, data[key]);
+                        });
+                    }
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const text = await response.text();
+                    return JSON.parse(text);
                 }
             } catch (error) {
                 console.error('API Error:', error);
@@ -3255,7 +3255,8 @@
             closeAdminPanel,
             refreshData
         };
-    </script>actionDigits: 0
+
+            actionDigits: 0
             }).format(price);
         }
 
