@@ -1350,6 +1350,609 @@
             document.querySelectorAll('.category-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
+            const activeTab = document.querySelector(`[data-category="${categoryName}"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+            
+            // Update active panel
+            document.querySelectorAll('.category-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            const activePanel = document.querySelector(`.category-panel[data-category="${categoryName}"]`);
+            if (activePanel) {
+                activePanel.classList.add('active');
+            }
+            
+            activeCategory = categoryName;
+            
+            // Reset search when switching category
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput && searchInput.value) {
+                searchInput.value = '';
+                handleSearch();
+            }
+        }
+
+        // Search functionality with enhanced UX for tab system
+        function handleSearch(searchTerm = '') {
+            const searchTermLower = searchTerm.toLowerCase().trim();
+            
+            if (searchTermLower === '') {
+                // Show all products in active category
+                showAllProductsInActiveCategory();
+                removeNoResultsMessage();
+                return;
+            }
+            
+            let hasVisibleProducts = false;
+            const activePanel = document.querySelector('.category-panel.active');
+            
+            if (activePanel) {
+                const productCards = activePanel.querySelectorAll('.product-card');
+                
+                productCards.forEach(card => {
+                    const searchTerms = card.getAttribute('data-search-terms') || '';
+                    
+                    if (searchTerms.includes(searchTermLower)) {
+                        card.style.display = 'block';
+                        hasVisibleProducts = true;
+                        highlightSearchTerm(card, searchTermLower);
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Check other categories for search results
+            if (!hasVisibleProducts) {
+                const allMatches = searchAllCategories(searchTermLower);
+                if (allMatches.length > 0) {
+                    showSearchResults(allMatches, searchTermLower);
+                    hasVisibleProducts = true;
+                } else {
+                    showNoResultsMessage(searchTermLower);
+                }
+            } else {
+                removeNoResultsMessage();
+            }
+        }
+
+        function showAllProductsInActiveCategory() {
+            const activePanel = document.querySelector('.category-panel.active');
+            if (activePanel) {
+                const productCards = activePanel.querySelectorAll('.product-card');
+                productCards.forEach(card => {
+                    card.style.display = 'block';
+                    // Remove highlights
+                    const nameEl = card.querySelector('.product-name');
+                    const descEl = card.querySelector('.product-description');
+                    [nameEl, descEl].forEach(el => {
+                        if (el && el.innerHTML.includes('<mark')) {
+                            el.innerHTML = el.textContent;
+                        }
+                    });
+                });
+            }
+        }
+
+        function searchAllCategories(searchTerm) {
+            const matches = [];
+            Object.entries(categories).forEach(([categoryName, categoryData]) => {
+                categoryData.products.forEach(product => {
+                    const searchString = `${product.name} ${product.description}`.toLowerCase();
+                    if (searchString.includes(searchTerm)) {
+                        matches.push({
+                            ...product,
+                            category: categoryName,
+                            categoryIcon: categoryData.icon
+                        });
+                    }
+                });
+            });
+            return matches;
+        }
+
+        function showSearchResults(matches, searchTerm) {
+            const categoryContent = document.getElementById('categoryContent');
+            
+            // Hide all panels
+            document.querySelectorAll('.category-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // Create search results panel
+            let searchPanel = document.querySelector('.search-results-panel');
+            if (!searchPanel) {
+                searchPanel = document.createElement('div');
+                searchPanel.className = 'category-panel search-results-panel';
+                categoryContent.appendChild(searchPanel);
+            }
+            
+            const searchResultsHtml = matches.map(product => `
+                <div class="product-card" data-product-id="${product.id}">
+                    <div class="product-category-badge">
+                        <i class="${product.categoryIcon}"></i> ${product.category}
+                    </div>
+                    <div class="product-name">${highlightText(product.name, searchTerm)}</div>
+                    <div class="product-price">${formatPrice(product.price)}</div>
+                    <div class="product-description">${highlightText(product.description, searchTerm)}</div>
+                    <button class="buy-btn" onclick="buyProduct('${product.name}', ${product.price})">
+                        <i class="fas fa-shopping-cart"></i> Beli Sekarang
+                    </button>
+                </div>
+            `).join('');
+            
+            searchPanel.innerHTML = `
+                <div class="category-header">
+                    <h3><i class="fas fa-search"></i> Hasil Pencarian</h3>
+                    <p>Ditemukan ${matches.length} produk untuk pencarian "<strong>${searchTerm}</strong>"</p>
+                    <button onclick="clearSearch()" class="btn-secondary" style="margin-top: 1rem; width: auto; display: inline-block;">
+                        <i class="fas fa-times"></i> Hapus Pencarian
+                    </button>
+                </div>
+                <div class="product-grid">
+                    ${searchResultsHtml}
+                </div>
+            `;
+            
+            searchPanel.classList.add('active');
+            
+            // Update tabs to show search state
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+        }
+
+        function highlightText(text, searchTerm) {
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<mark style="background: #ffeb3b; padding: 0 2px; border-radius: 3px;">$1</mark>');
+        }
+
+        function highlightSearchTerm(card, term) {
+            const nameEl = card.querySelector('.product-name');
+            const descEl = card.querySelector('.product-description');
+            
+            [nameEl, descEl].forEach(el => {
+                if (el) {
+                    const text = el.textContent;
+                    el.innerHTML = highlightText(text, term);
+                }
+            });
+        }
+
+        function showNoResultsMessage(searchTerm) {
+            const categoryContent = document.getElementById('categoryContent');
+            
+            // Hide all panels
+            document.querySelectorAll('.category-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            let noResultsPanel = document.querySelector('.no-results-panel');
+            if (!noResultsPanel) {
+                noResultsPanel = document.createElement('div');
+                noResultsPanel.className = 'category-panel no-results-panel';
+                categoryContent.appendChild(noResultsPanel);
+            }
+            
+            noResultsPanel.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-search fa-3x" style="color: #ccc; margin-bottom: 1rem;"></i>
+                    <h3>Tidak ada produk ditemukan</h3>
+                    <p>Pencarian untuk "<strong>${searchTerm}</strong>" tidak memberikan hasil.</p>
+                    <p>Coba kata kunci yang berbeda atau lihat semua kategori.</p>
+                    <button onclick="clearSearch()" class="btn-primary" style="margin-top: 1rem; width: auto; display: inline-block;">
+                        <i class="fas fa-times"></i> Hapus Pencarian
+                    </button>
+                </div>
+            `;
+            
+            noResultsPanel.classList.add('active');
+            
+            // Update tabs to show search state
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+        }
+
+        function removeNoResultsMessage() {
+            const searchPanel = document.querySelector('.search-results-panel');
+            const noResultsPanel = document.querySelector('.no-results-panel');
+            
+            if (searchPanel) {
+                searchPanel.remove();
+            }
+            if (noResultsPanel) {
+                noResultsPanel.remove();
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            removeNoResultsMessage();
+            
+            // Show the previously active category
+            switchCategory(activeCategory);
+        }
+
+        // Admin authentication functions
+        function openAdminPanel() {
+            if (!isLoggedIn) {
+                showLoginModal();
+            } else {
+                showAdminModal();
+            }
+        }
+
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+
+        function showAdminModal() {
+            document.getElementById('adminModal').style.display = 'block';
+            loadAdminData();
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function loadAdminData() {
+            // Load current settings into form
+            document.getElementById('storeName').value = currentSettings.storeName;
+            document.getElementById('whatsappNumber').value = currentSettings.whatsappNumber;
+            document.getElementById('contactEmail').value = currentSettings.contactEmail;
+        }
+
+        function refreshData() {
+            showMessage('Memuat ulang data...', 'success');
+            loadCategories();
+        }
+
+        // Global event listeners setup
+        function setupEventListeners() {
+            // Handle login form submission
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const password = formData.get('password');
+                
+                if (password === currentSettings.adminPassword) {
+                    isLoggedIn = true;
+                    closeLoginModal();
+                    showAdminModal();
+                    showMessage('Login berhasil! Selamat datang di Admin Panel.', 'success');
+                } else {
+                    showMessage('Password salah! Silakan coba lagi.', 'error');
+                    document.getElementById('adminPassword').focus();
+                }
+            });
+
+            // Handle product form submission
+            document.getElementById('productForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const productData = {
+                    category: formData.get('category'),
+                    name: formData.get('productName'),
+                    price: parseInt(formData.get('price')),
+                    description: formData.get('description'),
+                    id: Date.now() // Generate simple ID
+                };
+                
+                // Add product to local categories
+                if (categories[productData.category]) {
+                    categories[productData.category].products.push(productData);
+                    
+                    // Reload categories display
+                    loadCategories();
+                    
+                    // Reset form
+                    e.target.reset();
+                    
+                    showMessage(`Produk "${productData.name}" berhasil ditambahkan!`, 'success');
+                } else {
+                    showMessage('Kategori tidak valid!', 'error');
+                }
+            });
+
+            // Handle settings form submission
+            document.getElementById('settingsForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                
+                // Update settings
+                if (formData.get('storeName')) {
+                    currentSettings.storeName = formData.get('storeName');
+                    document.querySelector('.store-name').textContent = currentSettings.storeName;
+                }
+                
+                if (formData.get('whatsappNumber')) {
+                    currentSettings.whatsappNumber = formData.get('whatsappNumber');
+                }
+                
+                if (formData.get('contactEmail')) {
+                    currentSettings.contactEmail = formData.get('contactEmail');
+                    // Update footer contact info
+                    const contactInfo = document.querySelector('.contact-info');
+                    if (contactInfo) {
+                        contactInfo.innerHTML = contactInfo.innerHTML.replace(/info@xlaxisstore\.com/g, currentSettings.contactEmail);
+                    }
+                }
+                
+                if (formData.get('newAdminPassword')) {
+                    currentSettings.adminPassword = formData.get('newAdminPassword');
+                    document.getElementById('newAdminPassword').value = '';
+                }
+                
+                showMessage('Pengaturan berhasil disimpan!', 'success');
+            });
+
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                handleSearch(e.target.value);
+            });
+        }
+
+        // Utility functions for admin
+        function resetProductForm() {
+            document.getElementById('productForm').reset();
+            showMessage('Form produk telah direset.', 'success');
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const loginModal = document.getElementById('loginModal');
+            const adminModal = document.getElementById('adminModal');
+            
+            if (event.target === loginModal) {
+                closeLoginModal();
+            }
+            if (event.target === adminModal) {
+                closeAdminPanel();
+            }
+        });
+
+        // Tab switching function
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Buy product function
+        function buyProduct(productName, price) {
+            const whatsappNumber = currentSettings.whatsappNumber;
+            const storeName = currentSettings.storeName;
+            
+            const message = `Halo ${storeName}! 👋\n\nSaya ingin membeli:\n📦 *${productName}*\n💰 *${formatPrice(price)}*\n\nMohon informasi lebih lanjut untuk proses pemesanan.\nTerima kasih! 🙏`;
+            
+            const whatsappUrl = generateWhatsAppURL(whatsappNumber, message);
+            window.open(whatsappUrl, '_blank');
+            
+            showMessage(`Mengarahkan ke WhatsApp untuk pemesanan ${productName}...`, 'success');
+        }
+
+        // Smooth scroll effect for header
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.15)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
+            }
+            
+            lastScrollTop = scrollTop;
+        });
+
+        // Auto-logout after inactivity (optional security feature)
+        let inactivityTimer;
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            if (isLoggedIn) {
+                inactivityTimer = setTimeout(() => {
+                    isLoggedIn = false;
+                    closeAdminPanel();
+                    showMessage('Sesi admin telah berakhir karena tidak ada aktivitas.', 'error');
+                }, 30 * 60 * 1000); // 30 minutes
+            }
+        }
+
+        // Reset timer on user activity
+        ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+            document.addEventListener(event, resetInactivityTimer, true);
+        });
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+        });
+
+        // Load categories on page load
+        window.addEventListener('load', function() {
+            loadCategories();
+            
+            // Add welcome message after page loads
+            setTimeout(() => {
+                showMessage('Selamat datang di XL/AXIS Store! 🎉', 'success');
+            }, 2000);
+        });
+
+        // Keyboard shortcuts for admin
+        document.addEventListener('keydown', function(e) {
+            // Alt + A to open admin panel
+            if (e.altKey && e.code === 'KeyA') {
+                e.preventDefault();
+                openAdminPanel();
+            }
+            
+            // Esc to close modals
+            if (e.code === 'Escape') {
+                closeLoginModal();
+                closeAdminPanel();
+            }
+        });
+
+        // Global functions for external access
+        window.store = {
+            categories,
+            currentSettings,
+            isLoggedIn,
+            loadCategories,
+            buyProduct,
+            formatPrice,
+            openAdminPanel,
+            closeAdminPanel,
+            refreshData
+        };
+    </script>actionDigits: 0
+            }).format(price);
+        }
+
+        function showMessage(message, type = 'success') {
+            // Remove existing messages
+            const existingMessages = document.querySelectorAll('.message');
+            existingMessages.forEach(msg => msg.remove());
+
+            const messageEl = document.createElement('div');
+            messageEl.className = `message ${type}`;
+            messageEl.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; margin-left: 10px; cursor: pointer;">×</button>
+            `;
+            
+            document.body.appendChild(messageEl);
+            
+            setTimeout(() => {
+                if (messageEl.parentElement) {
+                    messageEl.remove();
+                }
+            }, 5000);
+        }
+
+        function generateWhatsAppURL(phoneNumber, message) {
+            const encodedMessage = encodeURIComponent(message);
+            return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        }
+
+        // Load categories and products with tab system
+        function loadCategories() {
+            const categoryTabs = document.getElementById('categoryTabs');
+            const categoryContent = document.getElementById('categoryContent');
+            const loading = document.getElementById('loading');
+            
+            // Show loading
+            loading.style.display = 'block';
+            
+            // Simulate loading delay for better UX
+            setTimeout(() => {
+                // Create tabs
+                categoryTabs.innerHTML = '';
+                categoryContent.innerHTML = '';
+                
+                let isFirst = true;
+                Object.entries(categories).forEach(([categoryName, categoryData]) => {
+                    // Create tab button
+                    const tabButton = document.createElement('button');
+                    tabButton.className = `category-tab ${isFirst ? 'active' : ''}`;
+                    tabButton.setAttribute('data-category', categoryName);
+                    tabButton.innerHTML = `
+                        <i class="${categoryData.icon}"></i>
+                        ${categoryName}
+                    `;
+                    tabButton.onclick = () => switchCategory(categoryName);
+                    categoryTabs.appendChild(tabButton);
+                    
+                    // Create tab panel
+                    const tabPanel = document.createElement('div');
+                    tabPanel.className = `category-panel ${isFirst ? 'active' : ''}`;
+                    tabPanel.setAttribute('data-category', categoryName);
+                    
+                    const productsHtml = categoryData.products.map(product => `
+                        <div class="product-card" data-product-id="${product.id}" data-search-terms="${product.name.toLowerCase()} ${product.description.toLowerCase()}">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">${formatPrice(product.price)}</div>
+                            <div class="product-description">${product.description}</div>
+                            <button class="buy-btn" onclick="buyProduct('${product.name}', ${product.price})">
+                                <i class="fas fa-shopping-cart"></i> Beli Sekarang
+                            </button>
+                        </div>
+                    `).join('');
+                    
+                    tabPanel.innerHTML = `
+                        <div class="category-header">
+                            <h3><i class="${categoryData.icon}"></i> ${categoryName}</h3>
+                            <p>${categoryData.description}</p>
+                        </div>
+                        <div class="product-grid">
+                            ${productsHtml}
+                        </div>
+                    `;
+                    
+                    categoryContent.appendChild(tabPanel);
+                    
+                    if (isFirst) {
+                        activeCategory = categoryName;
+                        isFirst = false;
+                    }
+                });
+                
+                // Hide loading with animation
+                loading.style.opacity = '0';
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    loading.style.opacity = '1';
+                    
+                    // Animate category tabs
+                    animateCategoryTabs();
+                }, 300);
+            }, 1200);
+        }
+
+        function animateCategoryTabs() {
+            const tabs = document.querySelectorAll('.category-tab');
+            tabs.forEach((tab, index) => {
+                tab.style.opacity = '0';
+                tab.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    tab.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    tab.style.opacity = '1';
+                    tab.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+
+        // Switch category tab
+        function switchCategory(categoryName) {
+            // Update active tab
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
             document.querySelector(`[data-category="${categoryName}"]`).classList.add('active');
             
             // Update active panel
