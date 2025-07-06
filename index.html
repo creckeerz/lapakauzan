@@ -32,6 +32,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            transition: all 0.3s ease;
         }
 
         .header-content {
@@ -52,9 +53,22 @@
 
         .logo i {
             color: #667eea;
+            animation: pulse 2s infinite;
         }
 
-        .admin-btn {
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .admin-btn, .refresh-btn {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             border: none;
@@ -63,9 +77,15 @@
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
-        .admin-btn:hover {
+        .refresh-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            padding: 10px 15px;
+        }
+
+        .admin-btn:hover, .refresh-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
@@ -75,18 +95,43 @@
             text-align: center;
             padding: 4rem 0;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin-bottom: 1rem;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #ffffff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero p {
             font-size: 1.2rem;
             margin-bottom: 2rem;
             opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .search-box {
@@ -103,6 +148,12 @@
             font-size: 1rem;
             outline: none;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .search-box i {
@@ -111,15 +162,17 @@
             top: 50%;
             transform: translateY(-50%);
             color: #667eea;
+            font-size: 1.2rem;
         }
 
-        /* Categories */
+        /* Categories Section */
         .categories {
             background: white;
-            padding: 3rem 0;
+            padding: 4rem 0;
             margin-top: -50px;
             position: relative;
             z-index: 10;
+            border-radius: 30px 30px 0 0;
         }
 
         .categories h2 {
@@ -127,110 +180,215 @@
             margin-bottom: 3rem;
             color: #333;
             font-size: 2.5rem;
+            position: relative;
+        }
+
+        .categories h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 2px;
         }
 
         .category-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 2rem;
             margin-bottom: 3rem;
         }
 
         .category-card {
             background: white;
-            border-radius: 20px;
-            padding: 2rem;
+            border-radius: 25px;
+            padding: 2.5rem 2rem;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .category-card:hover::before {
+            left: 100%;
         }
 
         .category-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
 
         .category-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 1.5rem;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 2.2rem;
             color: white;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover .category-icon {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        /* Unique colors for each category */
+        .category-card:nth-child(1) .category-icon {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+        }
+
+        .category-card:nth-child(2) .category-icon {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+        }
+
+        .category-card:nth-child(3) .category-icon {
+            background: linear-gradient(135deg, #45B7D1, #96C93D);
+        }
+
+        .category-card:nth-child(4) .category-icon {
+            background: linear-gradient(135deg, #F7B731, #FC4A1A);
         }
 
         .category-title {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: bold;
             margin-bottom: 1rem;
             color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .category-card:hover .category-title {
+            color: #667eea;
         }
 
         .category-desc {
             color: #666;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             line-height: 1.6;
+            font-size: 0.95rem;
         }
 
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
         .product-card {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+            padding: 1.8rem;
             text-align: center;
             transition: all 0.3s ease;
             border: 1px solid #e9ecef;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover::before {
+            transform: scaleX(1);
         }
 
         .product-card:hover {
-            background: #e9ecef;
-            transform: scale(1.02);
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
 
         .product-name {
             font-weight: bold;
             color: #333;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
         }
 
         .product-price {
             color: #667eea;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: bold;
+            margin-bottom: 0.8rem;
+        }
+
+        .product-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
         }
 
         .buy-btn {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 12px 24px;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 0.9rem;
-            margin-top: 1rem;
+            font-weight: 500;
             transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .buy-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .buy-btn:hover::before {
+            left: 100%;
         }
 
         .buy-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
-        /* Features */
+        /* Features Section */
         .features {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             padding: 4rem 0;
+            position: relative;
         }
 
         .features h2 {
@@ -242,28 +400,34 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 2rem;
         }
 
         .feature-card {
             background: white;
-            border-radius: 20px;
-            padding: 2rem;
+            border-radius: 25px;
+            padding: 2.5rem;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
         .feature-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 1rem;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 1.5rem;
             background: linear-gradient(45deg, #667eea, #764ba2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: white;
         }
 
@@ -297,7 +461,7 @@
             color: #667eea;
         }
 
-        /* Admin Panel Modal */
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -308,36 +472,69 @@
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
             z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
             background: white;
             margin: 2% auto;
-            padding: 2rem;
-            border-radius: 20px;
+            padding: 0;
+            border-radius: 25px;
             width: 90%;
-            max-width: 800px;
+            max-width: 500px;
             max-height: 90vh;
-            overflow-y: auto;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #f0f0f0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
         }
 
         .close {
-            font-size: 2rem;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
             cursor: pointer;
-            color: #666;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
 
         .close:hover {
-            color: #333;
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
         }
 
         .form-group {
@@ -347,22 +544,25 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: bold;
+            font-weight: 600;
             color: #333;
         }
 
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 12px;
+            padding: 12px 15px;
             border: 2px solid #e9ecef;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
         }
 
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .btn-primary {
@@ -375,11 +575,13 @@
             font-weight: 500;
             transition: all 0.3s ease;
             margin-right: 1rem;
+            width: 100%;
+            font-size: 1rem;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn-secondary {
@@ -391,34 +593,59 @@
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s ease;
+            margin-top: 1rem;
+            width: 100%;
         }
 
         .btn-secondary:hover {
             background: #5a6268;
+            transform: translateY(-2px);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
+        /* Admin Panel Styles */
+        .admin-modal-content {
+            max-width: 900px;
+            max-height: 85vh;
+        }
 
-            .hero p {
-                font-size: 1rem;
-            }
+        .admin-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin: 2rem;
+            padding: 0.5rem;
+        }
 
-            .category-grid {
-                grid-template-columns: 1fr;
-            }
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            flex: 1;
+            text-align: center;
+        }
 
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
+        .tab-button:hover {
+            color: #333;
+            background: rgba(255, 255, 255, 0.5);
+        }
 
-            .modal-content {
-                width: 95%;
-                margin: 5% auto;
-            }
+        .tab-button.active {
+            color: white;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 0 2rem 2rem;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         /* Loading Animation */
@@ -427,12 +654,13 @@
             text-align: center;
             color: #667eea;
             font-size: 1.2rem;
+            padding: 3rem;
         }
 
         .spinner {
             display: inline-block;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border: 4px solid #f3f3f3;
             border-top: 4px solid #667eea;
             border-radius: 50%;
@@ -444,6 +672,98 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Message Styles */
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 15px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .message.success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .message.error {
+            background: linear-gradient(45deg, #dc3545, #fd7e14);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        /* No Results Message */
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            background: white;
+            border-radius: 20px;
+            margin: 2rem 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .admin-btn, .refresh-btn {
+                font-size: 0.8rem;
+                padding: 8px 15px;
+            }
+
+            .admin-tabs {
+                flex-direction: column;
+                margin: 1rem;
+            }
+
+            .tab-button {
+                text-align: left;
+                padding: 0.8rem 1rem;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -453,11 +773,16 @@
             <div class="header-content">
                 <div class="logo">
                     <i class="fas fa-wifi"></i>
-                    <span>XL/AXIS Store</span>
+                    <span class="store-name">XL/AXIS Store</span>
                 </div>
-                <button class="admin-btn" onclick="openAdminPanel()">
-                    <i class="fas fa-cog"></i> Admin Panel
-                </button>
+                <div class="header-actions">
+                    <button class="refresh-btn" onclick="refreshData()" title="Refresh Data">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="admin-btn" onclick="openAdminPanel()">
+                        <i class="fas fa-cog"></i> Admin Panel
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -465,11 +790,13 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1>Kuota Internet XL/AXIS Termurah</h1>
-            <p>Dapatkan kuota internet berkualitas dengan harga terjangkau untuk semua kebutuhan Anda</p>
-            <div class="search-box">
-                <input type="text" placeholder="Cari paket kuota yang Anda butuhkan..." id="searchInput">
-                <i class="fas fa-search"></i>
+            <div class="hero-content">
+                <h1>Kuota Internet XL/AXIS Termurah</h1>
+                <p>Dapatkan kuota internet berkualitas dengan harga terjangkau untuk semua kebutuhan digital Anda</p>
+                <div class="search-box">
+                    <input type="text" placeholder="Cari paket kuota yang Anda butuhkan..." id="searchInput">
+                    <i class="fas fa-search"></i>
+                </div>
             </div>
         </div>
     </section>
@@ -523,7 +850,7 @@
     <footer>
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
+                <div class="footer-section contact-info">
                     <h3>Kontak Kami</h3>
                     <p><i class="fas fa-phone"></i> +62 812-3456-7890</p>
                     <p><i class="fas fa-envelope"></i> info@xlaxisstore.com</p>
@@ -547,118 +874,621 @@
         </div>
     </footer>
 
-    <!-- Admin Panel Modal -->
-    <div class="modal" id="adminModal">
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Admin Panel - Kelola Produk</h2>
-                <span class="close" onclick="closeAdminPanel()">&times;</span>
+                <h2><i class="fas fa-sign-in-alt"></i> Login Admin</h2>
+                <span class="close" onclick="closeLoginModal()">&times;</span>
             </div>
-            
-            <form id="productForm">
-                <div class="form-group">
-                    <label for="category">Kategori:</label>
-                    <select id="category" name="category" required>
-                        <option value="">Pilih Kategori</option>
-                        <option value="Official XL / AXIS">Official XL / AXIS</option>
-                        <option value="XL Circle">XL Circle</option>
-                        <option value="Paket Harian">Paket Harian</option>
-                        <option value="Perpanjangan Masa Aktif">Perpanjangan Masa Aktif</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="productName">Nama Produk:</label>
-                    <input type="text" id="productName" name="productName" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="price">Harga:</label>
-                    <input type="number" id="price" name="price" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description">Deskripsi:</label>
-                    <textarea id="description" name="description" rows="3"></textarea>
-                </div>
-                
-                <button type="submit" class="btn-primary">
-                    <i class="fas fa-save"></i> Simpan Produk
-                </button>
-                <button type="button" class="btn-secondary" onclick="closeAdminPanel()">
-                    <i class="fas fa-times"></i> Batal
-                </button>
-            </form>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="adminPassword"><i class="fas fa-lock"></i> Password Admin:</label>
+                        <input type="password" id="adminPassword" name="password" required placeholder="Masukkan password admin">
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="closeLoginModal()">
+                        <i class="fas fa-times"></i> Batal
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
-.preventDefault();
+    <!-- Admin Panel Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content admin-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cogs"></i> Admin Panel</h2>
+                <span class="close" onclick="closeAdminPanel()">&times;</span>
+            </div>
+            
+            <div class="admin-tabs">
+                <button class="tab-button active" onclick="showTab('products')">
+                    <i class="fas fa-box"></i> Produk
+                </button>
+                <button class="tab-button" onclick="showTab('orders')">
+                    <i class="fas fa-shopping-cart"></i> Pesanan
+                </button>
+                <button class="tab-button" onclick="showTab('settings')">
+                    <i class="fas fa-cog"></i> Pengaturan
+                </button>
+            </div>
+
+            <div class="tab-content active" id="products-tab">
+                <h3>Kelola Produk</h3>
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="category">Kategori:</label>
+                        <select id="category" name="category" required>
+                            <option value="">Pilih Kategori</option>
+                            <option value="Official XL / AXIS">Official XL / AXIS</option>
+                            <option value="XL Circle">XL Circle</option>
+                            <option value="Paket Harian">Paket Harian</option>
+                            <option value="Perpanjangan Masa Aktif">Perpanjangan Masa Aktif</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productName">Nama Produk:</label>
+                        <input type="text" id="productName" name="productName" required placeholder="Contoh: XL Combo Flex L">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="price">Harga:</label>
+                        <input type="number" id="price" name="price" required placeholder="85000" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Deskripsi:</label>
+                        <textarea id="description" name="description" rows="3" placeholder="30GB + Unlimited Apps"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Simpan Produk
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="resetProductForm()">
+                        <i class="fas fa-refresh"></i> Reset Form
+                    </button>
+                </form>
+            </div>
+
+            <div class="tab-content" id="orders-tab">
+                <h3>Kelola Pesanan</h3>
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    <i class="fas fa-shopping-cart fa-3x" style="color: #ccc; margin-bottom: 1rem;"></i>
+                    <p>Fitur kelola pesanan akan segera hadir!</p>
+                    <p>Saat ini pesanan dapat dilihat langsung di WhatsApp.</p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="settings-tab">
+                <h3>Pengaturan Toko</h3>
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label for="storeName">Nama Toko:</label>
+                        <input type="text" id="storeName" name="storeName" placeholder="XL/AXIS Store">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="whatsappNumber">Nomor WhatsApp:</label>
+                        <input type="text" id="whatsappNumber" name="whatsappNumber" placeholder="6281234567890">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactEmail">Email Kontak:</label>
+                        <input type="email" id="contactEmail" name="contactEmail" placeholder="info@xlaxisstore.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newAdminPassword">Password Admin Baru:</label>
+                        <input type="password" id="newAdminPassword" name="newAdminPassword" placeholder="Kosongkan jika tidak ingin mengubah">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Simpan Pengaturan
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isLoggedIn = false;
+        let currentSettings = {
+            storeName: 'XL/AXIS Store',
+            whatsappNumber: '6281234567890',
+            contactEmail: 'info@xlaxisstore.com',
+            adminPassword: 'admin123'
+        };
+
+        // Sample data structure with enhanced MyTelkomsel-like design
+        const categories = {
+            "Official XL / AXIS": {
+                icon: "fas fa-star",
+                description: "Paket resmi dari XL/AXIS dengan garansi kualitas terbaik dan coverage nasional",
+                products: [
+                    { id: 1, name: "XL Combo Flex L", price: 85000, description: "30GB + Unlimited Apps + Bonus Entertainment" },
+                    { id: 2, name: "AXIS Bronet 16GB", price: 45000, description: "16GB 30 hari + Bonus Social Media" },
+                    { id: 3, name: "XL Combo Flex M", price: 65000, description: "20GB + Unlimited Social Media + Music" },
+                    { id: 4, name: "AXIS Bronet 25GB", price: 75000, description: "25GB 30 hari + Unlimited Video Streaming" }
+                ]
+            },
+            "XL Circle": {
+                icon: "fas fa-circle-notch",
+                description: "Paket khusus XL Circle dengan benefit eksklusif dan reward points",
+                products: [
+                    { id: 5, name: "XL Circle 25GB", price: 60000, description: "25GB + Bonus Entertainment + Circle Points" },
+                    { id: 6, name: "XL Circle 50GB", price: 100000, description: "50GB + Unlimited YouTube + Premium Benefits" },
+                    { id: 7, name: "XL Circle 10GB", price: 35000, description: "10GB + Bonus Music Streaming + Circle Rewards" },
+                    { id: 8, name: "XL Circle 75GB", price: 130000, description: "75GB + All Unlimited + VIP Support" }
+                ]
+            },
+            "Paket Harian": {
+                icon: "fas fa-calendar-day",
+                description: "Paket kuota harian untuk kebutuhan internet sehari-hari Anda",
+                products: [
+                    { id: 9, name: "XL Harian 1GB", price: 8000, description: "1GB berlaku 1 hari + Bonus Chat" },
+                    { id: 10, name: "AXIS Harian 2GB", price: 12000, description: "2GB berlaku 1 hari + Social Media" },
+                    { id: 11, name: "XL Harian 500MB", price: 5000, description: "500MB berlaku 1 hari + WhatsApp Unlimited" },
+                    { id: 12, name: "AXIS Harian 3GB", price: 15000, description: "3GB berlaku 1 hari + Video Streaming" }
+                ]
+            },
+            "Perpanjangan Masa Aktif": {
+                icon: "fas fa-clock",
+                description: "Perpanjang masa aktif kartu Anda tanpa tambahan kuota",
+                products: [
+                    { id: 13, name: "Perpanjangan 30 Hari", price: 5000, description: "Masa aktif 30 hari tanpa kuota tambahan" },
+                    { id: 14, name: "Perpanjangan 90 Hari", price: 12000, description: "Masa aktif 90 hari dengan bonus pulsa" },
+                    { id: 15, name: "Perpanjangan 7 Hari", price: 2000, description: "Masa aktif 7 hari untuk kebutuhan mendesak" },
+                    { id: 16, name: "Perpanjangan 180 Hari", price: 20000, description: "Masa aktif 6 bulan + Bonus kuota 1GB" }
+                ]
+            }
+        };
+
+        // Utility functions
+        function formatPrice(price) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(price);
+        }
+
+        function showMessage(message, type = 'success') {
+            // Remove existing messages
+            const existingMessages = document.querySelectorAll('.message');
+            existingMessages.forEach(msg => msg.remove());
+
+            const messageEl = document.createElement('div');
+            messageEl.className = `message ${type}`;
+            messageEl.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; margin-left: 10px; cursor: pointer;">×</button>
+            `;
+            
+            document.body.appendChild(messageEl);
+            
+            setTimeout(() => {
+                if (messageEl.parentElement) {
+                    messageEl.remove();
+                }
+            }, 5000);
+        }
+
+        function generateWhatsAppURL(phoneNumber, message) {
+            const encodedMessage = encodeURIComponent(message);
+            return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        }
+
+        // Load categories and products with enhanced styling
+        function loadCategories() {
+            const categoryGrid = document.getElementById('categoryGrid');
+            const loading = document.getElementById('loading');
+            
+            // Show loading
+            loading.style.display = 'block';
+            
+            // Simulate loading delay for better UX
+            setTimeout(() => {
+                categoryGrid.innerHTML = '';
+                
+                Object.entries(categories).forEach(([categoryName, categoryData]) => {
+                    const categoryCard = document.createElement('div');
+                    categoryCard.className = 'category-card';
+                    categoryCard.setAttribute('data-category', categoryName);
+                    
+                    const productsHtml = categoryData.products.map(product => `
+                        <div class="product-card" data-product-id="${product.id}" data-search-terms="${product.name.toLowerCase()} ${product.description.toLowerCase()}">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">${formatPrice(product.price)}</div>
+                            <div class="product-description">${product.description}</div>
+                            <button class="buy-btn" onclick="buyProduct('${product.name}', ${product.price})">
+                                <i class="fas fa-shopping-cart"></i> Beli Sekarang
+                            </button>
+                        </div>
+                    `).join('');
+                    
+                    categoryCard.innerHTML = `
+                        <div class="category-icon">
+                            <i class="${categoryData.icon}"></i>
+                        </div>
+                        <div class="category-title">${categoryName}</div>
+                        <div class="category-desc">${categoryData.description}</div>
+                        <div class="product-grid">
+                            ${productsHtml}
+                        </div>
+                    `;
+                    
+                    categoryGrid.appendChild(categoryCard);
+                });
+                
+                // Hide loading with animation
+                loading.style.opacity = '0';
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    loading.style.opacity = '1';
+                    
+                    // Animate category cards
+                    animateCategoryCards();
+                }, 300);
+            }, 1200);
+        }
+
+        function animateCategoryCards() {
+            const cards = document.querySelectorAll('.category-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+        }
+
+        // Admin authentication functions
+        function openAdminPanel() {
+            if (!isLoggedIn) {
+                showLoginModal();
+            } else {
+                showAdminModal();
+            }
+        }
+
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+
+        function showAdminModal() {
+            document.getElementById('adminModal').style.display = 'block';
+            loadAdminData();
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function loadAdminData() {
+            // Load current settings into form
+            document.getElementById('storeName').value = currentSettings.storeName;
+            document.getElementById('whatsappNumber').value = currentSettings.whatsappNumber;
+            document.getElementById('contactEmail').value = currentSettings.contactEmail;
+        }
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const password = formData.get('password');
+            
+            if (password === currentSettings.adminPassword) {
+                isLoggedIn = true;
+                closeLoginModal();
+                showAdminModal();
+                showMessage('Login berhasil! Selamat datang di Admin Panel.', 'success');
+            } else {
+                showMessage('Password salah! Silakan coba lagi.', 'error');
+                document.getElementById('adminPassword').focus();
+            }
+        });
+
+        // Handle product form submission
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
             const formData = new FormData(e.target);
             const productData = {
                 category: formData.get('category'),
                 name: formData.get('productName'),
                 price: parseInt(formData.get('price')),
-                description: formData.get('description')
+                description: formData.get('description'),
+                id: Date.now() // Generate simple ID
             };
             
-            // Here you would normally send data to Google Apps Script
-            console.log('Product data:', productData);
-            
-            // Add product to local categories (for demo)
+            // Add product to local categories
             if (categories[productData.category]) {
-                categories[productData.category].products.push({
-                    name: productData.name,
-                    price: productData.price,
-                    description: productData.description
-                });
+                categories[productData.category].products.push(productData);
+                
+                // Reload categories display
+                loadCategories();
+                
+                // Reset form
+                e.target.reset();
+                
+                showMessage(`Produk "${productData.name}" berhasil ditambahkan!`, 'success');
+            } else {
+                showMessage('Kategori tidak valid!', 'error');
+            }
+        });
+
+        // Handle settings form submission
+        document.getElementById('settingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            
+            // Update settings
+            if (formData.get('storeName')) {
+                currentSettings.storeName = formData.get('storeName');
+                document.querySelector('.store-name').textContent = currentSettings.storeName;
             }
             
-            // Reload categories
-            loadCategories();
+            if (formData.get('whatsappNumber')) {
+                currentSettings.whatsappNumber = formData.get('whatsappNumber');
+            }
             
-            // Close modal
-            closeAdminPanel();
+            if (formData.get('contactEmail')) {
+                currentSettings.contactEmail = formData.get('contactEmail');
+                // Update footer contact info
+                const contactInfo = document.querySelector('.contact-info');
+                if (contactInfo) {
+                    contactInfo.innerHTML = contactInfo.innerHTML.replace(/info@xlaxisstore\.com/g, currentSettings.contactEmail);
+                }
+            }
             
-            // Show success message
-            alert('Produk berhasil ditambahkan!');
+            if (formData.get('newAdminPassword')) {
+                currentSettings.adminPassword = formData.get('newAdminPassword');
+                document.getElementById('newAdminPassword').value = '';
+            }
+            
+            showMessage('Pengaturan berhasil disimpan!', 'success');
         });
+
+        // Tab switching function
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
 
         // Buy product function
         function buyProduct(productName, price) {
-            const whatsappNumber = '6281234567890'; // Replace with your WhatsApp number
-            const message = `Halo, saya ingin membeli ${productName} dengan harga Rp ${price.toLocaleString()}`;
-            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            const whatsappNumber = currentSettings.whatsappNumber;
+            const storeName = currentSettings.storeName;
+            
+            const message = `Halo ${storeName}! 👋\n\nSaya ingin membeli:\n📦 *${productName}*\n💰 *${formatPrice(price)}*\n\nMohon informasi lebih lanjut untuk proses pemesanan.\nTerima kasih! 🙏`;
+            
+            const whatsappUrl = generateWhatsAppURL(whatsappNumber, message);
             window.open(whatsappUrl, '_blank');
+            
+            showMessage(`Mengarahkan ke WhatsApp untuk pemesanan ${productName}...`, 'success');
         }
 
-        // Search functionality
+        // Search functionality with enhanced UX
         document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
+            const searchTerm = e.target.value.toLowerCase().trim();
             const productCards = document.querySelectorAll('.product-card');
+            const categoryCards = document.querySelectorAll('.category-card');
             
-            productCards.forEach(card => {
-                const productName = card.querySelector('.product-name').textContent.toLowerCase();
-                const productDesc = card.querySelector('.product-card div:nth-child(3)').textContent.toLowerCase();
-                
-                if (productName.includes(searchTerm) || productDesc.includes(searchTerm)) {
+            if (searchTerm === '') {
+                // Show all products and categories
+                productCards.forEach(card => {
                     card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
+                });
+                categoryCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                removeNoResultsMessage();
+                return;
+            }
+            
+            let hasVisibleProducts = false;
+            
+            categoryCards.forEach(categoryCard => {
+                let categoryHasVisibleProducts = false;
+                const productsInCategory = categoryCard.querySelectorAll('.product-card');
+                
+                productsInCategory.forEach(card => {
+                    const searchTerms = card.getAttribute('data-search-terms') || '';
+                    
+                    if (searchTerms.includes(searchTerm)) {
+                        card.style.display = 'block';
+                        categoryHasVisibleProducts = true;
+                        hasVisibleProducts = true;
+                        
+                        // Highlight search term
+                        highlightSearchTerm(card, searchTerm);
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Show/hide category based on visible products
+                categoryCard.style.display = categoryHasVisibleProducts ? 'block' : 'none';
+            });
+            
+            // Show "no results" message if needed
+            if (!hasVisibleProducts) {
+                showNoResultsMessage(searchTerm);
+            } else {
+                removeNoResultsMessage();
+            }
+        });
+
+        function highlightSearchTerm(card, term) {
+            // Simple highlight implementation
+            const nameEl = card.querySelector('.product-name');
+            const descEl = card.querySelector('.product-description');
+            
+            [nameEl, descEl].forEach(el => {
+                if (el) {
+                    let text = el.textContent;
+                    const regex = new RegExp(`(${term})`, 'gi');
+                    const highlightedText = text.replace(regex, '<mark style="background: #ffeb3b; padding: 0 2px; border-radius: 3px;">$1</mark>');
+                    el.innerHTML = highlightedText;
                 }
             });
-        });
+        }
+
+        function showNoResultsMessage(searchTerm) {
+            removeNoResultsMessage();
+            
+            const categoryGrid = document.getElementById('categoryGrid');
+            const noResultsEl = document.createElement('div');
+            noResultsEl.id = 'noResultsMessage';
+            noResultsEl.className = 'no-results';
+            noResultsEl.innerHTML = `
+                <i class="fas fa-search fa-3x" style="color: #ccc; margin-bottom: 1rem;"></i>
+                <h3>Tidak ada produk ditemukan</h3>
+                <p>Pencarian untuk "<strong>${searchTerm}</strong>" tidak memberikan hasil.</p>
+                <p>Coba kata kunci yang berbeda atau lihat semua kategori.</p>
+                <button onclick="clearSearch()" class="btn-primary" style="margin-top: 1rem; width: auto;">
+                    <i class="fas fa-times"></i> Hapus Pencarian
+                </button>
+            `;
+            
+            categoryGrid.appendChild(noResultsEl);
+        }
+
+        function removeNoResultsMessage() {
+            const noResultsEl = document.getElementById('noResultsMessage');
+            if (noResultsEl) {
+                noResultsEl.remove();
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchInput').dispatchEvent(new Event('input'));
+        }
+
+        // Utility functions for admin
+        function resetProductForm() {
+            document.getElementById('productForm').reset();
+            showMessage('Form produk telah direset.', 'success');
+        }
+
+        function refreshData() {
+            showMessage('Memuat ulang data...', 'success');
+            loadCategories();
+        }
 
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('adminModal');
-            if (event.target == modal) {
+            const loginModal = document.getElementById('loginModal');
+            const adminModal = document.getElementById('adminModal');
+            
+            if (event.target === loginModal) {
+                closeLoginModal();
+            }
+            if (event.target === adminModal) {
                 closeAdminPanel();
             }
         }
 
+        // Smooth scroll effect for header
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.15)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
+            }
+            
+            lastScrollTop = scrollTop;
+        });
+
+        // Auto-logout after inactivity (optional security feature)
+        let inactivityTimer;
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            if (isLoggedIn) {
+                inactivityTimer = setTimeout(() => {
+                    isLoggedIn = false;
+                    closeAdminPanel();
+                    showMessage('Sesi admin telah berakhir karena tidak ada aktivitas.', 'error');
+                }, 30 * 60 * 1000); // 30 minutes
+            }
+        }
+
+        // Reset timer on user activity
+        ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+            document.addEventListener(event, resetInactivityTimer, true);
+        });
+
         // Load categories on page load
-        window.addEventListener('load', loadCategories);
+        window.addEventListener('load', function() {
+            loadCategories();
+            
+            // Add welcome message after page loads
+            setTimeout(() => {
+                showMessage('Selamat datang di XL/AXIS Store! 🎉', 'success');
+            }, 2000);
+        });
+
+        // Keyboard shortcuts for admin
+        document.addEventListener('keydown', function(e) {
+            // Alt + A to open admin panel
+            if (e.altKey && e.code === 'KeyA') {
+                e.preventDefault();
+                openAdminPanel();
+            }
+            
+            // Esc to close modals
+            if (e.code === 'Escape') {
+                closeLoginModal();
+                closeAdminPanel();
+            }
+        });
+
+        // Global functions for external access
+        window.store = {
+            categories,
+            currentSettings,
+            isLoggedIn,
+            loadCategories,
+            buyProduct,
+            formatPrice
+        };
     </script>
 </body>
 </html>
