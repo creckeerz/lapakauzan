@@ -195,11 +195,129 @@
             border-radius: 2px;
         }
 
-        .category-grid {
+        /* Category Tabs - MyTelkomsel Style */
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-tab {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            margin: 0 5px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #666;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .category-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: left 0.5s;
+        }
+
+        .category-tab:hover::before {
+            left: 100%;
+        }
+
+        .category-tab:hover {
+            color: #333;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .category-tab.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .category-tab i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* Tab Content */
+        .category-content {
+            min-height: 400px;
+            position: relative;
+        }
+
+        .category-panel {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .category-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .category-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .category-header h3 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-header p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
         .category-card {
@@ -295,7 +413,21 @@
             margin-top: 1.5rem;
         }
 
-        .product-card {
+        /* Product Category Badge */
+        .product-category-badge {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .product-category-badge i {
+            margin-right: 4px;
+        }
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             border-radius: 20px;
             padding: 1.8rem;
@@ -721,9 +853,38 @@
                 font-size: 1rem;
             }
 
-            .category-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
+            .category-tabs {
+                padding: 6px;
+                margin: 0 -20px 2rem;
+                border-radius: 0;
+                justify-content: flex-start;
+            }
+
+            .category-tab {
+                padding: 12px 20px;
+                margin: 0 3px;
+                font-size: 0.85rem;
+                min-width: 120px;
+            }
+
+            .category-tab i {
+                font-size: 1rem;
+                margin-right: 6px;
+            }
+
+            .category-header {
+                padding: 1.5rem;
+                margin: 0 -20px 2rem;
+                border-radius: 0;
+            }
+
+            .category-header h3 {
+                font-size: 1.5rem;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
             }
 
             .features-grid {
@@ -805,8 +966,15 @@
     <section class="categories">
         <div class="container">
             <h2>Kategori Produk</h2>
-            <div class="category-grid" id="categoryGrid">
-                <!-- Categories will be loaded here -->
+            
+            <!-- Category Tabs - MyTelkomsel Style -->
+            <div class="category-tabs" id="categoryTabs">
+                <!-- Tabs will be loaded here -->
+            </div>
+            
+            <!-- Category Content -->
+            <div class="category-content" id="categoryContent">
+                <!-- Category panels will be loaded here -->
             </div>
             
             <div class="loading" id="loading">
@@ -999,6 +1167,7 @@
     <script>
         // Global variables
         let isLoggedIn = false;
+        let activeCategory = 'Official XL / AXIS'; // Default active category
         let currentSettings = {
             storeName: 'XL/AXIS Store',
             whatsappNumber: '6281234567890',
@@ -1010,7 +1179,7 @@
         const categories = {
             "Official XL / AXIS": {
                 icon: "fas fa-star",
-                description: "Paket resmi dari XL/AXIS dengan garansi kualitas terbaik dan coverage nasional",
+                description: "Paket resmi dari XL/AXIS dengan garansi kualitas terbaik dan coverage nasional yang luas",
                 products: [
                     { id: 1, name: "XL Combo Flex L", price: 85000, description: "30GB + Unlimited Apps + Bonus Entertainment" },
                     { id: 2, name: "AXIS Bronet 16GB", price: 45000, description: "16GB 30 hari + Bonus Social Media" },
@@ -1020,7 +1189,7 @@
             },
             "XL Circle": {
                 icon: "fas fa-circle-notch",
-                description: "Paket khusus XL Circle dengan benefit eksklusif dan reward points",
+                description: "Paket khusus XL Circle dengan benefit eksklusif dan reward points untuk member setia",
                 products: [
                     { id: 5, name: "XL Circle 25GB", price: 60000, description: "25GB + Bonus Entertainment + Circle Points" },
                     { id: 6, name: "XL Circle 50GB", price: 100000, description: "50GB + Unlimited YouTube + Premium Benefits" },
@@ -1030,7 +1199,7 @@
             },
             "Paket Harian": {
                 icon: "fas fa-calendar-day",
-                description: "Paket kuota harian untuk kebutuhan internet sehari-hari Anda",
+                description: "Paket kuota harian untuk kebutuhan internet sehari-hari dengan harga terjangkau",
                 products: [
                     { id: 9, name: "XL Harian 1GB", price: 8000, description: "1GB berlaku 1 hari + Bonus Chat" },
                     { id: 10, name: "AXIS Harian 2GB", price: 12000, description: "2GB berlaku 1 hari + Social Media" },
@@ -1040,7 +1209,7 @@
             },
             "Perpanjangan Masa Aktif": {
                 icon: "fas fa-clock",
-                description: "Perpanjang masa aktif kartu Anda tanpa tambahan kuota",
+                description: "Perpanjang masa aktif kartu Anda tanpa tambahan kuota untuk tetap terhubung",
                 products: [
                     { id: 13, name: "Perpanjangan 30 Hari", price: 5000, description: "Masa aktif 30 hari tanpa kuota tambahan" },
                     { id: 14, name: "Perpanjangan 90 Hari", price: 12000, description: "Masa aktif 90 hari dengan bonus pulsa" },
@@ -1087,9 +1256,10 @@
             return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
         }
 
-        // Load categories and products with enhanced styling
+        // Load categories and products with tab system
         function loadCategories() {
-            const categoryGrid = document.getElementById('categoryGrid');
+            const categoryTabs = document.getElementById('categoryTabs');
+            const categoryContent = document.getElementById('categoryContent');
             const loading = document.getElementById('loading');
             
             // Show loading
@@ -1097,14 +1267,111 @@
             
             // Simulate loading delay for better UX
             setTimeout(() => {
-                categoryGrid.innerHTML = '';
+                // Create tabs
+                categoryTabs.innerHTML = '';
+                categoryContent.innerHTML = '';
                 
+                let isFirst = true;
                 Object.entries(categories).forEach(([categoryName, categoryData]) => {
-                    const categoryCard = document.createElement('div');
-                    categoryCard.className = 'category-card';
-                    categoryCard.setAttribute('data-category', categoryName);
+                    // Create tab button
+                    const tabButton = document.createElement('button');
+                    tabButton.className = `category-tab ${isFirst ? 'active' : ''}`;
+                    tabButton.setAttribute('data-category', categoryName);
+                    tabButton.innerHTML = `
+                        <i class="${categoryData.icon}"></i>
+                        ${categoryName}
+                    `;
+                    tabButton.onclick = () => switchCategory(categoryName);
+                    categoryTabs.appendChild(tabButton);
+                    
+                    // Create tab panel
+                    const tabPanel = document.createElement('div');
+                    tabPanel.className = `category-panel ${isFirst ? 'active' : ''}`;
+                    tabPanel.setAttribute('data-category', categoryName);
                     
                     const productsHtml = categoryData.products.map(product => `
+                        <div class="product-card" data-product-id="${product.id}" data-search-terms="${product.name.toLowerCase()} ${product.description.toLowerCase()}">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">${formatPrice(product.price)}</div>
+                            <div class="product-description">${product.description}</div>
+                            <button class="buy-btn" onclick="buyProduct('${product.name}', ${product.price})">
+                                <i class="fas fa-shopping-cart"></i> Beli Sekarang
+                            </button>
+                        </div>
+                    `).join('');
+                    
+                    tabPanel.innerHTML = `
+                        <div class="category-header">
+                            <h3><i class="${categoryData.icon}"></i> ${categoryName}</h3>
+                            <p>${categoryData.description}</p>
+                        </div>
+                        <div class="product-grid">
+                            ${productsHtml}
+                        </div>
+                    `;
+                    
+                    categoryContent.appendChild(tabPanel);
+                    
+                    if (isFirst) {
+                        activeCategory = categoryName;
+                        isFirst = false;
+                    }
+                });
+                
+                // Hide loading with animation
+                loading.style.opacity = '0';
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    loading.style.opacity = '1';
+                    
+                    // Animate category tabs
+                    animateCategoryTabs();
+                }, 300);
+            }, 1200);
+        }
+
+        function animateCategoryTabs() {
+            const tabs = document.querySelectorAll('.category-tab');
+            tabs.forEach((tab, index) => {
+                tab.style.opacity = '0';
+                tab.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    tab.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    tab.style.opacity = '1';
+                    tab.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+
+        // Switch category tab
+        function switchCategory(categoryName) {
+            // Update active tab
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-category="${categoryName}"]`).classList.add('active');
+            
+            // Update active panel
+            document.querySelectorAll('.category-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelector(`.category-panel[data-category="${categoryName}"]`).classList.add('active');
+            
+            activeCategory = categoryName;
+            
+            // Reset search when switching category
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput.value) {
+                searchInput.value = '';
+                handleSearch();
+            }
+        }
+
+        function animateCategoryCards() {
+            // This function is no longer needed with tab system
+            // Kept for compatibility
+        }Data.products.map(product => `
                         <div class="product-card" data-product-id="${product.id}" data-search-terms="${product.name.toLowerCase()} ${product.description.toLowerCase()}">
                             <div class="product-name">${product.name}</div>
                             <div class="product-price">${formatPrice(product.price)}</div>
@@ -1298,102 +1565,210 @@
             showMessage(`Mengarahkan ke WhatsApp untuk pemesanan ${productName}...`, 'success');
         }
 
-        // Search functionality with enhanced UX
+        // Search functionality with enhanced UX for tab system
         document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            const productCards = document.querySelectorAll('.product-card');
-            const categoryCards = document.querySelectorAll('.category-card');
+            handleSearch(e.target.value);
+        });
+
+        function handleSearch(searchTerm = '') {
+            const searchTermLower = searchTerm.toLowerCase().trim();
             
-            if (searchTerm === '') {
-                // Show all products and categories
-                productCards.forEach(card => {
-                    card.style.display = 'block';
-                });
-                categoryCards.forEach(card => {
-                    card.style.display = 'block';
-                });
+            if (searchTermLower === '') {
+                // Show all products in active category
+                showAllProductsInActiveCategory();
                 removeNoResultsMessage();
                 return;
             }
             
             let hasVisibleProducts = false;
+            const activePanel = document.querySelector('.category-panel.active');
             
-            categoryCards.forEach(categoryCard => {
-                let categoryHasVisibleProducts = false;
-                const productsInCategory = categoryCard.querySelectorAll('.product-card');
+            if (activePanel) {
+                const productCards = activePanel.querySelectorAll('.product-card');
                 
-                productsInCategory.forEach(card => {
+                productCards.forEach(card => {
                     const searchTerms = card.getAttribute('data-search-terms') || '';
                     
-                    if (searchTerms.includes(searchTerm)) {
+                    if (searchTerms.includes(searchTermLower)) {
                         card.style.display = 'block';
-                        categoryHasVisibleProducts = true;
                         hasVisibleProducts = true;
-                        
-                        // Highlight search term
-                        highlightSearchTerm(card, searchTerm);
+                        highlightSearchTerm(card, searchTermLower);
                     } else {
                         card.style.display = 'none';
                     }
                 });
-                
-                // Show/hide category based on visible products
-                categoryCard.style.display = categoryHasVisibleProducts ? 'block' : 'none';
-            });
+            }
             
-            // Show "no results" message if needed
+            // Check other categories for search results
             if (!hasVisibleProducts) {
-                showNoResultsMessage(searchTerm);
+                const allMatches = searchAllCategories(searchTermLower);
+                if (allMatches.length > 0) {
+                    showSearchResults(allMatches, searchTermLower);
+                    hasVisibleProducts = true;
+                } else {
+                    showNoResultsMessage(searchTermLower);
+                }
             } else {
                 removeNoResultsMessage();
             }
-        });
+        }
+
+        function showAllProductsInActiveCategory() {
+            const activePanel = document.querySelector('.category-panel.active');
+            if (activePanel) {
+                const productCards = activePanel.querySelectorAll('.product-card');
+                productCards.forEach(card => {
+                    card.style.display = 'block';
+                    // Remove highlights
+                    const nameEl = card.querySelector('.product-name');
+                    const descEl = card.querySelector('.product-description');
+                    [nameEl, descEl].forEach(el => {
+                        if (el && el.innerHTML.includes('<mark')) {
+                            el.innerHTML = el.textContent;
+                        }
+                    });
+                });
+            }
+        }
+
+        function searchAllCategories(searchTerm) {
+            const matches = [];
+            Object.entries(categories).forEach(([categoryName, categoryData]) => {
+                categoryData.products.forEach(product => {
+                    const searchString = `${product.name} ${product.description}`.toLowerCase();
+                    if (searchString.includes(searchTerm)) {
+                        matches.push({
+                            ...product,
+                            category: categoryName,
+                            categoryIcon: categoryData.icon
+                        });
+                    }
+                });
+            });
+            return matches;
+        }
+
+        function showSearchResults(matches, searchTerm) {
+            const categoryContent = document.getElementById('categoryContent');
+            
+            // Hide all panels
+            document.querySelectorAll('.category-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // Create search results panel
+            let searchPanel = document.querySelector('.search-results-panel');
+            if (!searchPanel) {
+                searchPanel = document.createElement('div');
+                searchPanel.className = 'category-panel search-results-panel';
+                categoryContent.appendChild(searchPanel);
+            }
+            
+            const searchResultsHtml = matches.map(product => `
+                <div class="product-card" data-product-id="${product.id}">
+                    <div class="product-category-badge">
+                        <i class="${product.categoryIcon}"></i> ${product.category}
+                    </div>
+                    <div class="product-name">${highlightText(product.name, searchTerm)}</div>
+                    <div class="product-price">${formatPrice(product.price)}</div>
+                    <div class="product-description">${highlightText(product.description, searchTerm)}</div>
+                    <button class="buy-btn" onclick="buyProduct('${product.name}', ${product.price})">
+                        <i class="fas fa-shopping-cart"></i> Beli Sekarang
+                    </button>
+                </div>
+            `).join('');
+            
+            searchPanel.innerHTML = `
+                <div class="category-header">
+                    <h3><i class="fas fa-search"></i> Hasil Pencarian</h3>
+                    <p>Ditemukan ${matches.length} produk untuk pencarian "<strong>${searchTerm}</strong>"</p>
+                    <button onclick="clearSearch()" class="btn-secondary" style="margin-top: 1rem; width: auto; display: inline-block;">
+                        <i class="fas fa-times"></i> Hapus Pencarian
+                    </button>
+                </div>
+                <div class="product-grid">
+                    ${searchResultsHtml}
+                </div>
+            `;
+            
+            searchPanel.classList.add('active');
+            
+            // Update tabs to show search state
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+        }
+
+        function highlightText(text, searchTerm) {
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<mark style="background: #ffeb3b; padding: 0 2px; border-radius: 3px;">$1</mark>');
+        }
 
         function highlightSearchTerm(card, term) {
-            // Simple highlight implementation
             const nameEl = card.querySelector('.product-name');
             const descEl = card.querySelector('.product-description');
             
             [nameEl, descEl].forEach(el => {
                 if (el) {
-                    let text = el.textContent;
-                    const regex = new RegExp(`(${term})`, 'gi');
-                    const highlightedText = text.replace(regex, '<mark style="background: #ffeb3b; padding: 0 2px; border-radius: 3px;">$1</mark>');
-                    el.innerHTML = highlightedText;
+                    const text = el.textContent;
+                    el.innerHTML = highlightText(text, term);
                 }
             });
         }
 
         function showNoResultsMessage(searchTerm) {
-            removeNoResultsMessage();
+            const categoryContent = document.getElementById('categoryContent');
             
-            const categoryGrid = document.getElementById('categoryGrid');
-            const noResultsEl = document.createElement('div');
-            noResultsEl.id = 'noResultsMessage';
-            noResultsEl.className = 'no-results';
-            noResultsEl.innerHTML = `
-                <i class="fas fa-search fa-3x" style="color: #ccc; margin-bottom: 1rem;"></i>
-                <h3>Tidak ada produk ditemukan</h3>
-                <p>Pencarian untuk "<strong>${searchTerm}</strong>" tidak memberikan hasil.</p>
-                <p>Coba kata kunci yang berbeda atau lihat semua kategori.</p>
-                <button onclick="clearSearch()" class="btn-primary" style="margin-top: 1rem; width: auto;">
-                    <i class="fas fa-times"></i> Hapus Pencarian
-                </button>
+            // Hide all panels
+            document.querySelectorAll('.category-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            let noResultsPanel = document.querySelector('.no-results-panel');
+            if (!noResultsPanel) {
+                noResultsPanel = document.createElement('div');
+                noResultsPanel.className = 'category-panel no-results-panel';
+                categoryContent.appendChild(noResultsPanel);
+            }
+            
+            noResultsPanel.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-search fa-3x" style="color: #ccc; margin-bottom: 1rem;"></i>
+                    <h3>Tidak ada produk ditemukan</h3>
+                    <p>Pencarian untuk "<strong>${searchTerm}</strong>" tidak memberikan hasil.</p>
+                    <p>Coba kata kunci yang berbeda atau lihat semua kategori.</p>
+                    <button onclick="clearSearch()" class="btn-primary" style="margin-top: 1rem; width: auto; display: inline-block;">
+                        <i class="fas fa-times"></i> Hapus Pencarian
+                    </button>
+                </div>
             `;
             
-            categoryGrid.appendChild(noResultsEl);
+            noResultsPanel.classList.add('active');
+            
+            // Update tabs to show search state
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
         }
 
         function removeNoResultsMessage() {
-            const noResultsEl = document.getElementById('noResultsMessage');
-            if (noResultsEl) {
-                noResultsEl.remove();
+            const searchPanel = document.querySelector('.search-results-panel');
+            const noResultsPanel = document.querySelector('.no-results-panel');
+            
+            if (searchPanel) {
+                searchPanel.remove();
+            }
+            if (noResultsPanel) {
+                noResultsPanel.remove();
             }
         }
 
         function clearSearch() {
             document.getElementById('searchInput').value = '';
-            document.getElementById('searchInput').dispatchEvent(new Event('input'));
+            removeNoResultsMessage();
+            
+            // Show the previously active category
+            switchCategory(activeCategory);
         }
 
         // Utility functions for admin
