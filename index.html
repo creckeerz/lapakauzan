@@ -2275,7 +2275,7 @@
             const whatsappNumber = currentSettings.whatsappNumber;
             const storeName = currentSettings.storeName;
             
-            const message = `Halo ${storeName}! 👋\n\nSaya ingin membeli:\n📦 *${productName}*\n💰 *${formatPrice(price)}*\n\n${description}\n\nMohon informasi lebih lanjut untuk proses pemesanan.\nTerima kasih! 🙏`;
+            const message = `Halo ${storeName}! 👋\n\nSaya ingin membeli:\n📦 *${product.name}*\n💰 *${formatPrice(product.price)}*\n\n${cleanDescription}\n\nMohon informasi lebih lanjut untuk proses pemesanan.\nTerima kasih! 🙏`;
             
             const whatsappUrl = generateWhatsAppURL(whatsappNumber, message);
             window.open(whatsappUrl, '_blank');
