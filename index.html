@@ -2090,7 +2090,7 @@
             const whatsappNumber = currentSettings.whatsappNumber;
             const storeName = currentSettings.storeName;
             
-            const message = `Halo ${storeName}! 👋\n\nSaya ingin membeli:\n📦 *${productName}*\n💰 *${formatPrice(price)}*\n\nMohon informasi lebih lanjut untuk proses pemesanan.\nTerima kasih! 🙏`;
+            const message = `Halo ${storeName}! 👋\n\nSaya ingin membeli:\n📦 *${productName}*\n💰 *${formatPrice(price)}* \n*${product.description}*\n\nMohon informasi lebih lanjut untuk proses pemesanan.\nTerima kasih! 🙏`;
             
             const whatsappUrl = generateWhatsAppURL(whatsappNumber, message);
             window.open(whatsappUrl, '_blank');
