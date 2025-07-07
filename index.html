@@ -370,6 +370,21 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
 
+        /* Product card tidak tersedia */
+        .product-card.unavailable {
+            opacity: 0.6;
+            background: linear-gradient(135deg, #f1f1f1, #e0e0e0);
+        }
+
+        .product-card.unavailable::before {
+            background: linear-gradient(45deg, #6c757d, #5a6268);
+        }
+
+        .product-card.unavailable:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
         .product-name {
             font-weight: bold;
             color: #333;
@@ -389,7 +404,30 @@
             font-size: 0.9rem;
             margin-bottom: 1.5rem;
             line-height: 1.6;
-            white-space: pre-line; /* Preserve line breaks */
+            white-space: pre-line;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.available {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .status-badge.unavailable {
+            background: linear-gradient(45deg, #dc3545, #fd7e14);
+            color: white;
         }
 
         .buy-btn {
@@ -425,6 +463,22 @@
         .buy-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Tombol tidak tersedia */
+        .buy-btn:disabled {
+            background: linear-gradient(45deg, #6c757d, #5a6268);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .buy-btn:disabled::before {
+            display: none;
+        }
+
+        .buy-btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
         }
 
         /* Features Section */
@@ -841,7 +895,7 @@
             color: #666;
             font-size: 0.9rem;
             line-height: 1.4;
-            white-space: pre-line; /* Preserve line breaks */
+            white-space: pre-line;
         }
 
         .product-created-date {
@@ -886,6 +940,35 @@
         .btn-delete:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        /* Status toggle button */
+        .btn-toggle-status {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-toggle-status.available {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-toggle-status.unavailable {
+            background: linear-gradient(45deg, #dc3545, #fd7e14);
+            color: white;
+        }
+
+        .btn-toggle-status:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .empty-products {
@@ -1257,6 +1340,14 @@
                                     <label for="description">Deskripsi:</label>
                                     <textarea id="description" name="description" rows="4" placeholder="Deskripsi produk&#10;Baris kedua deskripsi&#10;Baris ketiga deskripsi"></textarea>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="productStatus">Status Ketersediaan:</label>
+                                    <select id="productStatus" name="status" required>
+                                        <option value="available">Tersedia</option>
+                                        <option value="unavailable">Tidak Tersedia</option>
+                                    </select>
+                                </div>
                                 
                                 <div class="form-actions-fixed">
                                     <button type="submit" class="btn-primary">
@@ -1332,6 +1423,7 @@
                 ADD_PRODUCT: 'addProduct',
                 UPDATE_PRODUCT: 'updateProduct',
                 DELETE_PRODUCT: 'deleteProduct',
+                TOGGLE_PRODUCT_STATUS: 'toggleProductStatus',
                 GET_SETTINGS: 'getSettings',
                 UPDATE_SETTINGS: 'updateSettings',
                 AUTHENTICATE_ADMIN: 'authenticateAdmin'
@@ -1537,16 +1629,29 @@
                     tabPanel.className = `category-panel ${isFirst ? 'active' : ''}`;
                     tabPanel.setAttribute('data-category', categoryName);
                     
-                    const productsHtml = categoryData.products.map(product => `
-                        <div class="product-card" data-product-id="${product.id}" data-search-terms="${product.name.toLowerCase()} ${product.description.toLowerCase()}">
-                            <div class="product-name">${product.name}</div>
-                            <div class="product-price">${formatPrice(product.price)}</div>
-                            <div class="product-description">${product.description}</div>
-                            <button class="buy-btn" onclick="buyProduct('${product.name}', ${product.price})">
-                                <i class="fas fa-shopping-cart"></i> Beli Sekarang
-                            </button>
-                        </div>
-                    `).join('');
+                    const productsHtml = categoryData.products.map(product => {
+                        const status = product.status || 'available';
+                        const isAvailable = status === 'available';
+                        const cardClass = isAvailable ? '' : 'unavailable';
+                        const statusBadge = isAvailable ? 
+                            '<div class="status-badge available"><i class="fas fa-check-circle"></i> Tersedia</div>' : 
+                            '<div class="status-badge unavailable"><i class="fas fa-times-circle"></i> Habis</div>';
+                        const buttonText = isAvailable ? 
+                            '<i class="fas fa-shopping-cart"></i> Beli Sekarang' : 
+                            '<i class="fas fa-ban"></i> Tidak Tersedia';
+                        
+                        return `
+                            <div class="product-card ${cardClass}" data-product-id="${product.id}" data-search-terms="${product.name.toLowerCase()} ${product.description.toLowerCase()}">
+                                ${statusBadge}
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-price">${formatPrice(product.price)}</div>
+                                <div class="product-description">${product.description}</div>
+                                <button class="buy-btn" ${isAvailable ? '' : 'disabled'} onclick="${isAvailable ? `buyProduct('${product.name}', ${product.price}, '${product.description.replace(/'/g, "\\'")}')` : 'showUnavailableMessage()'}">
+                                    ${buttonText}
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
                     
                     tabPanel.innerHTML = `
                         <div class="category-header">
@@ -1710,19 +1815,32 @@
                 categoryContent.appendChild(searchPanel);
             }
             
-            const searchResultsHtml = matches.map(product => `
-                <div class="product-card" data-product-id="${product.id}">
-                    <div class="product-category-badge">
-                        <i class="${product.categoryIcon}"></i> ${product.category}
+            const searchResultsHtml = matches.map(product => {
+                const status = product.status || 'available';
+                const isAvailable = status === 'available';
+                const cardClass = isAvailable ? '' : 'unavailable';
+                const statusBadge = isAvailable ? 
+                    '<div class="status-badge available"><i class="fas fa-check-circle"></i> Tersedia</div>' : 
+                    '<div class="status-badge unavailable"><i class="fas fa-times-circle"></i> Habis</div>';
+                const buttonText = isAvailable ? 
+                    '<i class="fas fa-shopping-cart"></i> Beli Sekarang' : 
+                    '<i class="fas fa-ban"></i> Tidak Tersedia';
+                
+                return `
+                    <div class="product-card ${cardClass}" data-product-id="${product.id}">
+                        ${statusBadge}
+                        <div class="product-category-badge">
+                            <i class="${product.categoryIcon}"></i> ${product.category}
+                        </div>
+                        <div class="product-name">${highlightText(product.name, searchTerm)}</div>
+                        <div class="product-price">${formatPrice(product.price)}</div>
+                        <div class="product-description">${highlightText(product.description, searchTerm)}</div>
+                        <button class="buy-btn" ${isAvailable ? '' : 'disabled'} onclick="${isAvailable ? `buyProduct('${product.name}', ${product.price}, '${product.description.replace(/'/g, "\\'")}')` : 'showUnavailableMessage()'}">
+                            ${buttonText}
+                        </button>
                     </div>
-                    <div class="product-name">${highlightText(product.name, searchTerm)}</div>
-                    <div class="product-price">${formatPrice(product.price)}</div>
-                    <div class="product-description">${highlightText(product.description, searchTerm)}</div>
-                    <button class="buy-btn" onclick="buyProduct('${product.name}', ${product.price})">
-                        <i class="fas fa-shopping-cart"></i> Beli Sekarang
-                    </button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
             
             searchPanel.innerHTML = `
                 <div class="category-header">
@@ -1813,6 +1931,11 @@
             }
             removeNoResultsMessage();
             switchCategory(activeCategory);
+        }
+
+        // Function untuk menampilkan pesan produk tidak tersedia
+        function showUnavailableMessage() {
+            showMessage('Maaf, produk ini sedang tidak tersedia. Silakan pilih produk lain atau hubungi admin.', 'error');
         }
 
         // Admin functions
@@ -1937,6 +2060,14 @@
             });
 
             allProducts.forEach(product => {
+                const status = product.status || 'available';
+                const isAvailable = status === 'available';
+                const statusText = isAvailable ? 'Tersedia' : 'Tidak Tersedia';
+                const statusClass = isAvailable ? 'available' : 'unavailable';
+                const statusIcon = isAvailable ? 'fas fa-check-circle' : 'fas fa-times-circle';
+                const toggleText = isAvailable ? 'Nonaktifkan' : 'Aktifkan';
+                const toggleIcon = isAvailable ? 'fas fa-eye-slash' : 'fas fa-eye';
+                
                 const productItem = document.createElement('div');
                 productItem.className = 'product-item';
                 productItem.innerHTML = `
@@ -1946,9 +2077,17 @@
                             <h5>${product.name}</h5>
                             <div class="product-price">${formatPrice(product.price)}</div>
                             <div class="product-description">${product.description}</div>
+                            <div style="margin-top: 0.5rem;">
+                                <span class="status-badge ${statusClass}">
+                                    <i class="${statusIcon}"></i> ${statusText}
+                                </span>
+                            </div>
                             ${product.createdDate ? `<div class="product-created-date">Dibuat: ${new Date(product.createdDate).toLocaleDateString('id-ID')}</div>` : ''}
                         </div>
                         <div class="product-actions">
+                            <button class="btn-toggle-status ${statusClass}" onclick="toggleProductStatus(${product.id})" title="${toggleText} Produk">
+                                <i class="${toggleIcon}"></i> ${toggleText}
+                            </button>
                             <button class="btn-edit" onclick="editProduct(${product.id})" title="Edit Produk">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
@@ -1960,6 +2099,49 @@
                 `;
                 productsList.appendChild(productItem);
             });
+        }
+
+        // Fungsi untuk toggle status produk
+        async function toggleProductStatus(productId) {
+            let productToToggle = null;
+            let productCategory = '';
+
+            Object.entries(productsData).forEach(([categoryName, categoryData]) => {
+                const found = categoryData.products.find(p => p.id === productId);
+                if (found) {
+                    productToToggle = found;
+                    productCategory = categoryName;
+                }
+            });
+
+            if (!productToToggle) {
+                showMessage('Produk tidak ditemukan!', 'error');
+                return;
+            }
+
+            const currentStatus = productToToggle.status || 'available';
+            const newStatus = currentStatus === 'available' ? 'unavailable' : 'available';
+            const statusText = newStatus === 'available' ? 'tersedia' : 'tidak tersedia';
+
+            try {
+                // Call API to toggle status
+                await apiCall(CONFIG.ENDPOINTS.TOGGLE_PRODUCT_STATUS, 'POST', { 
+                    id: productId, 
+                    status: newStatus 
+                });
+                
+                // Update local data
+                productToToggle.status = newStatus;
+                
+                await loadCategories();
+                loadProductsList();
+                
+                showMessage(`Status produk "${productToToggle.name}" berhasil diubah menjadi ${statusText}!`, 'success');
+                
+            } catch (error) {
+                console.error('Error toggling product status:', error);
+                showMessage('Gagal mengubah status produk!', 'error');
+            }
         }
 
         function editProduct(productId) {
@@ -1983,12 +2165,14 @@
             const productName = document.getElementById('productName');
             const price = document.getElementById('price');
             const description = document.getElementById('description');
+            const productStatus = document.getElementById('productStatus');
             const form = document.getElementById('productForm');
 
             if (categorySelect) categorySelect.value = productCategory;
             if (productName) productName.value = productToEdit.name;
             if (price) price.value = productToEdit.price;
             if (description) description.value = productToEdit.description;
+            if (productStatus) productStatus.value = productToEdit.status || 'available';
 
             if (form) {
                 form.setAttribute('data-edit-id', productId);
@@ -2086,11 +2270,12 @@
             }
         }
 
-        function buyProduct(productName, price) {
+        // FIXED: Fungsi buyProduct dengan parameter description
+        function buyProduct(productName, price, description = '') {
             const whatsappNumber = currentSettings.whatsappNumber;
             const storeName = currentSettings.storeName;
             
-            const message = `Halo ${storeName}! 👋\n\nSaya ingin membeli:\n📦 *${productName}*\n💰 *${formatPrice(price)}*\n\nMohon informasi lebih lanjut untuk proses pemesanan.\nTerima kasih! 🙏`;
+            const message = `Halo ${storeName}! 👋\n\nSaya ingin membeli:\n📦 *${productName}*\n💰 *${formatPrice(price)}*\n\n${description}\n\nMohon informasi lebih lanjut untuk proses pemesanan.\nTerima kasih! 🙏`;
             
             const whatsappUrl = generateWhatsAppURL(whatsappNumber, message);
             window.open(whatsappUrl, '_blank');
@@ -2162,6 +2347,7 @@
                         name: formData.get('productName'),
                         price: parseInt(formData.get('price')),
                         description: formData.get('description'),
+                        status: formData.get('status') || 'available',
                         id: editId ? parseInt(editId) : Date.now(),
                         createdDate: editId ? null : new Date().toISOString()
                     };
@@ -2389,10 +2575,12 @@
             refreshData,
             editProduct,
             deleteProduct,
+            toggleProductStatus,
             resetProductForm,
             showTab,
             switchCategory,
             clearSearch,
+            showUnavailableMessage,
             apiCall
         };
     </script>
