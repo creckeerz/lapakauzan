@@ -1,7 +1,7 @@
 <script>
         // Configuration for Google Apps Script
         const CONFIG = {
-            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbx5utDZK6MKZ7-1TWxvTREdUb2jy2tBTHeVQ2fYrMVaEoAgeMm1wUDYO5zOZBl28VGflA/exec', // Replace with your actual URL
+            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyOCpi4tRK15g-KiBKeVpZx6ubIJ9xCCkNszk0WfRM7U5-JmN8AHdzZmORNjUa-_Qs8WQ/exec', // Replace with your actual URL
             ENDPOINTS: {
                 GET_PRODUCTS: 'getProducts',
                 ADD_PRODUCT: 'addProduct',
@@ -190,13 +190,23 @@
 
         async function saveSettingsToServer(settings) {
             try {
-                const response = await apiRequest(CONFIG.ENDPOINTS.UPDATE_SETTINGS, settings, 'POST');
+                // Send each setting individually to match Google Apps Script format
+                let allSuccess = true;
+                const results = [];
                 
-                if (response.success) {
+                for (const [key, value] of Object.entries(settings)) {
+                    const response = await apiRequest(CONFIG.ENDPOINTS.UPDATE_SETTINGS, { [key]: value }, 'POST');
+                    results.push(response);
+                    if (!response.success) {
+                        allSuccess = false;
+                    }
+                }
+                
+                if (allSuccess) {
                     showMessage('Pengaturan berhasil disimpan ke server!', 'success');
                     return true;
                 } else {
-                    showMessage(`Gagal menyimpan pengaturan: ${response.message}`, 'error');
+                    showMessage('Beberapa pengaturan gagal disimpan', 'error');
                     return false;
                 }
             } catch (error) {
@@ -3255,8 +3265,7 @@
             closeAdminPanel,
             refreshData
         };
-
-            actionDigits: 0
+    </script>actionDigits: 0
             }).format(price);
         }
 
