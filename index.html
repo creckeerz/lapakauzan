@@ -1646,7 +1646,7 @@
                                 <div class="product-name">${product.name}</div>
                                 <div class="product-price">${formatPrice(product.price)}</div>
                                 <div class="product-description">${product.description}</div>
-                                <button class="buy-btn" ${isAvailable ? '' : 'disabled'} onclick="${isAvailable ? `buyProduct('${product.name}', ${product.price}, '${product.description.replace(/'/g, "\\'")}')` : 'showUnavailableMessage()'}">
+                                <button class="buy-btn" ${isAvailable ? '' : 'disabled'} onclick="${isAvailable ? `buyProduct('${product.name}', ${product.price}, (/'/g, "\\'")}')` : 'showUnavailableMessage()'}">
                                     ${buttonText}
                                 </button>
                             </div>
