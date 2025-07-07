@@ -1324,7 +1324,7 @@
     </div>
 
     <script>
-        // Configuration for Google Apps Script (if needed)
+        // GANTI URL INI DENGAN URL GOOGLE APPS SCRIPT ANDA
         const CONFIG = {
             APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzJvcwVbZ7pCTSSi8UIakaTkIt52cQkVEk-wVKZSkXHHuTTgJXZ-lIrg5Hsq3JS7Yi-kQ/exec',
             ENDPOINTS: {
@@ -1333,7 +1333,8 @@
                 UPDATE_PRODUCT: 'updateProduct',
                 DELETE_PRODUCT: 'deleteProduct',
                 GET_SETTINGS: 'getSettings',
-                UPDATE_SETTINGS: 'updateSettings'
+                UPDATE_SETTINGS: 'updateSettings',
+                AUTHENTICATE_ADMIN: 'authenticateAdmin'
             }
         };
 
@@ -1346,50 +1347,7 @@
             contactEmail: 'info@xlaxisstore.com',
             adminPassword: 'admin123'
         };
-
-        // Sample data structure
-        const categories = {
-            "Official XL / AXIS": {
-                icon: "fas fa-star",
-                description: "Paket resmi dari XL/AXIS dengan garansi kualitas terbaik dan coverage nasional yang luas",
-                products: [
-                    { id: 1, name: "XL Combo Flex L", price: 85000, description: "30GB kuota utama\n+ Unlimited Apps (WhatsApp, Instagram, TikTok)\n+ Bonus Entertainment\n+ Masa aktif 30 hari" },
-                    { id: 2, name: "AXIS Bronet 16GB", price: 45000, description: "16GB kuota internet\n+ Bonus Social Media unlimited\n+ Masa aktif 30 hari\n+ Kecepatan 4G+" },
-                    { id: 3, name: "XL Combo Flex M", price: 65000, description: "20GB kuota utama\n+ Unlimited Social Media\n+ Bonus Music Streaming\n+ Video quality HD" },
-                    { id: 4, name: "AXIS Bronet 25GB", price: 75000, description: "25GB kuota internet\n+ Unlimited Video Streaming\n+ YouTube Premium 1 bulan\n+ Masa aktif 30 hari" }
-                ]
-            },
-            "XL Circle": {
-                icon: "fas fa-circle-notch",
-                description: "Paket khusus XL Circle dengan benefit eksklusif dan reward points untuk member setia",
-                products: [
-                    { id: 5, name: "XL Circle 25GB", price: 60000, description: "25GB kuota utama\n+ Bonus Entertainment apps\n+ Circle Points reward\n+ Priority customer service" },
-                    { id: 6, name: "XL Circle 50GB", price: 100000, description: "50GB kuota utama\n+ Unlimited YouTube & Netflix\n+ Premium Benefits\n+ VIP customer support\n+ Free device protection" },
-                    { id: 7, name: "XL Circle 10GB", price: 35000, description: "10GB kuota utama\n+ Bonus Music Streaming\n+ Circle Rewards\n+ Exclusive member deals" },
-                    { id: 8, name: "XL Circle 75GB", price: 130000, description: "75GB kuota premium\n+ All Unlimited access\n+ VIP Support 24/7\n+ Priority network\n+ Exclusive benefits" }
-                ]
-            },
-            "Paket Harian": {
-                icon: "fas fa-calendar-day",
-                description: "Paket kuota harian untuk kebutuhan internet sehari-hari dengan harga terjangkau",
-                products: [
-                    { id: 9, name: "XL Harian 1GB", price: 8000, description: "1GB kuota internet\n+ Berlaku 1 hari (24 jam)\n+ Bonus Chat unlimited\n+ Speed up to 4G+" },
-                    { id: 10, name: "AXIS Harian 2GB", price: 12000, description: "2GB kuota internet\n+ Berlaku 1 hari (24 jam)\n+ Social Media unlimited\n+ Video streaming HD" },
-                    { id: 11, name: "XL Harian 500MB", price: 5000, description: "500MB kuota internet\n+ Berlaku 1 hari (24 jam)\n+ WhatsApp unlimited\n+ Basic browsing" },
-                    { id: 12, name: "AXIS Harian 3GB", price: 15000, description: "3GB kuota internet\n+ Berlaku 1 hari (24 jam)\n+ Video Streaming unlimited\n+ Gaming priority" }
-                ]
-            },
-            "Perpanjangan Masa Aktif": {
-                icon: "fas fa-clock",
-                description: "Perpanjang masa aktif kartu Anda tanpa tambahan kuota untuk tetap terhubung",
-                products: [
-                    { id: 13, name: "Perpanjangan 30 Hari", price: 5000, description: "Masa aktif 30 hari\n+ Tanpa kuota tambahan\n+ Sisa kuota tetap aktif\n+ SMS & telpon normal" },
-                    { id: 14, name: "Perpanjangan 90 Hari", price: 12000, description: "Masa aktif 90 hari\n+ Bonus pulsa Rp 5.000\n+ Sisa kuota tetap aktif\n+ Priority customer service" },
-                    { id: 15, name: "Perpanjangan 7 Hari", price: 2000, description: "Masa aktif 7 hari\n+ Untuk kebutuhan mendesak\n+ Tanpa kuota tambahan\n+ Instant activation" },
-                    { id: 16, name: "Perpanjangan 180 Hari", price: 20000, description: "Masa aktif 6 bulan\n+ Bonus kuota 1GB\n+ Bonus pulsa Rp 10.000\n+ VIP customer support" }
-                ]
-            }
-        };
+        let productsData = {};
 
         // Utility functions
         function formatPrice(price) {
@@ -1427,20 +1385,142 @@
             return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
         }
 
+        // API functions
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            try {
+                const url = new URL(CONFIG.APPS_SCRIPT_URL);
+                url.searchParams.append('action', endpoint);
+                
+                let options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                };
+
+                if (method === 'POST' && data) {
+                    const formData = new URLSearchParams();
+                    Object.keys(data).forEach(key => {
+                        formData.append(key, data[key]);
+                    });
+                    options.body = formData;
+                }
+
+                console.log('API Call:', endpoint, method, data);
+                
+                const response = await fetch(url.toString(), options);
+                const result = await response.json();
+                
+                console.log('API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API call failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('API Error:', error);
+                showMessage(`Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Load data functions
+        async function loadProductsFromAPI() {
+            try {
+                const result = await apiCall(CONFIG.ENDPOINTS.GET_PRODUCTS);
+                if (result.success && result.data) {
+                    productsData = result.data;
+                    console.log('Products loaded from API:', productsData);
+                } else {
+                    // Initialize with default empty structure if no data
+                    productsData = {
+                        "Official XL / AXIS": { 
+                            icon: "fas fa-star", 
+                            description: "Paket resmi dari XL/AXIS dengan garansi kualitas terbaik dan coverage nasional yang luas", 
+                            products: [] 
+                        },
+                        "XL Circle": { 
+                            icon: "fas fa-circle-notch", 
+                            description: "Paket khusus XL Circle dengan benefit eksklusif dan reward points untuk member setia", 
+                            products: [] 
+                        },
+                        "Paket Harian": { 
+                            icon: "fas fa-calendar-day", 
+                            description: "Paket kuota harian untuk kebutuhan internet sehari-hari dengan harga terjangkau", 
+                            products: [] 
+                        },
+                        "Perpanjangan Masa Aktif": { 
+                            icon: "fas fa-clock", 
+                            description: "Perpanjang masa aktif kartu Anda tanpa tambahan kuota untuk tetap terhubung", 
+                            products: [] 
+                        }
+                    };
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showMessage('Gagal memuat data produk. Menggunakan data lokal.', 'error');
+                // Use fallback empty structure
+                productsData = {
+                    "Official XL / AXIS": { 
+                        icon: "fas fa-star", 
+                        description: "Paket resmi dari XL/AXIS dengan garansi kualitas terbaik dan coverage nasional yang luas", 
+                        products: [] 
+                    },
+                    "XL Circle": { 
+                        icon: "fas fa-circle-notch", 
+                        description: "Paket khusus XL Circle dengan benefit eksklusif dan reward points untuk member setia", 
+                        products: [] 
+                    },
+                    "Paket Harian": { 
+                        icon: "fas fa-calendar-day", 
+                        description: "Paket kuota harian untuk kebutuhan internet sehari-hari dengan harga terjangkau", 
+                        products: [] 
+                    },
+                    "Perpanjangan Masa Aktif": { 
+                        icon: "fas fa-clock", 
+                        description: "Perpanjang masa aktif kartu Anda tanpa tambahan kuota untuk tetap terhubung", 
+                        products: [] 
+                    }
+                };
+            }
+        }
+
+        async function loadSettingsFromAPI() {
+            try {
+                const result = await apiCall(CONFIG.ENDPOINTS.GET_SETTINGS);
+                if (result.success && result.data) {
+                    currentSettings = { ...currentSettings, ...result.data };
+                    console.log('Settings loaded from API:', currentSettings);
+                    
+                    // Update store name in header
+                    const storeNameEl = document.querySelector('.store-name');
+                    if (storeNameEl && currentSettings.storeName) {
+                        storeNameEl.textContent = currentSettings.storeName;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                showMessage('Gagal memuat pengaturan. Menggunakan pengaturan default.', 'error');
+            }
+        }
+
         // Load categories and products
-        function loadCategories() {
+        async function loadCategories() {
             const categoryTabs = document.getElementById('categoryTabs');
             const categoryContent = document.getElementById('categoryContent');
             const loading = document.getElementById('loading');
             
             loading.style.display = 'block';
             
-            setTimeout(() => {
+            try {
+                await loadProductsFromAPI();
+                
                 categoryTabs.innerHTML = '';
                 categoryContent.innerHTML = '';
                 
                 let isFirst = true;
-                Object.entries(categories).forEach(([categoryName, categoryData]) => {
+                Object.entries(productsData).forEach(([categoryName, categoryData]) => {
                     // Create tab button
                     const tabButton = document.createElement('button');
                     tabButton.className = `category-tab ${isFirst ? 'active' : ''}`;
@@ -1492,7 +1572,12 @@
                     loading.style.opacity = '1';
                     animateCategoryTabs();
                 }, 300);
-            }, 1200);
+                
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                loading.style.display = 'none';
+                showMessage('Gagal memuat kategori produk.', 'error');
+            }
         }
 
         function animateCategoryTabs() {
@@ -1596,7 +1681,7 @@
 
         function searchAllCategories(searchTerm) {
             const matches = [];
-            Object.entries(categories).forEach(([categoryName, categoryData]) => {
+            Object.entries(productsData).forEach(([categoryName, categoryData]) => {
                 categoryData.products.forEach(product => {
                     const searchString = `${product.name} ${product.description}`.toLowerCase();
                     if (searchString.includes(searchTerm)) {
@@ -1772,16 +1857,23 @@
             }
         }
 
-        function loadAdminData() {
-            const storeName = document.getElementById('storeName');
-            const whatsappNumber = document.getElementById('whatsappNumber');
-            const contactEmail = document.getElementById('contactEmail');
-            
-            if (storeName) storeName.value = currentSettings.storeName;
-            if (whatsappNumber) whatsappNumber.value = currentSettings.whatsappNumber;
-            if (contactEmail) contactEmail.value = currentSettings.contactEmail;
-            
-            loadProductsList();
+        async function loadAdminData() {
+            try {
+                await loadSettingsFromAPI();
+                
+                const storeName = document.getElementById('storeName');
+                const whatsappNumber = document.getElementById('whatsappNumber');
+                const contactEmail = document.getElementById('contactEmail');
+                
+                if (storeName) storeName.value = currentSettings.storeName;
+                if (whatsappNumber) whatsappNumber.value = currentSettings.whatsappNumber;
+                if (contactEmail) contactEmail.value = currentSettings.contactEmail;
+                
+                loadProductsList();
+            } catch (error) {
+                console.error('Error loading admin data:', error);
+                showMessage('Gagal memuat data admin.', 'error');
+            }
         }
 
         function resetProductForm() {
@@ -1811,7 +1903,7 @@
             let allProducts = [];
             let totalCount = 0;
 
-            Object.entries(categories).forEach(([categoryName, categoryData]) => {
+            Object.entries(productsData).forEach(([categoryName, categoryData]) => {
                 categoryData.products.forEach(product => {
                     allProducts.push({
                         ...product,
@@ -1874,7 +1966,7 @@
             let productToEdit = null;
             let productCategory = '';
 
-            Object.entries(categories).forEach(([categoryName, categoryData]) => {
+            Object.entries(productsData).forEach(([categoryName, categoryData]) => {
                 const found = categoryData.products.find(p => p.id === productId);
                 if (found) {
                     productToEdit = found;
@@ -1915,11 +2007,11 @@
             showMessage('Mode edit: Ubah data produk dan klik "Update Produk"', 'success');
         }
 
-        function deleteProduct(productId) {
+        async function deleteProduct(productId) {
             let productToDelete = null;
             let productCategory = '';
 
-            Object.entries(categories).forEach(([categoryName, categoryData]) => {
+            Object.entries(productsData).forEach(([categoryName, categoryData]) => {
                 const found = categoryData.products.find(p => p.id === productId);
                 if (found) {
                     productToDelete = found;
@@ -1935,25 +2027,44 @@
             const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus produk "${productToDelete.name}"?\n\nTindakan ini tidak dapat dibatalkan.`);
             
             if (confirmDelete) {
-                const categoryProducts = categories[productCategory].products;
-                const productIndex = categoryProducts.findIndex(p => p.id === productId);
-                
-                if (productIndex > -1) {
-                    categoryProducts.splice(productIndex, 1);
+                try {
+                    // Call API to delete product
+                    await apiCall(CONFIG.ENDPOINTS.DELETE_PRODUCT, 'POST', { id: productId });
                     
-                    loadCategories();
-                    loadProductsList();
+                    // Remove from local data
+                    const categoryProducts = productsData[productCategory].products;
+                    const productIndex = categoryProducts.findIndex(p => p.id === productId);
                     
-                    showMessage(`Produk "${productToDelete.name}" berhasil dihapus!`, 'success');
-                } else {
+                    if (productIndex > -1) {
+                        categoryProducts.splice(productIndex, 1);
+                        
+                        await loadCategories();
+                        loadProductsList();
+                        
+                        showMessage(`Produk "${productToDelete.name}" berhasil dihapus!`, 'success');
+                    } else {
+                        showMessage('Gagal menghapus produk dari data lokal!', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting product:', error);
                     showMessage('Gagal menghapus produk!', 'error');
                 }
             }
         }
 
-        function refreshData() {
+        async function refreshData() {
             showMessage('Memuat ulang data...', 'success');
-            loadCategories();
+            try {
+                await loadSettingsFromAPI();
+                await loadCategories();
+                if (isLoggedIn) {
+                    loadProductsList();
+                }
+                showMessage('Data berhasil dimuat ulang!', 'success');
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+                showMessage('Gagal memuat ulang data!', 'error');
+            }
         }
 
         function showTab(tabName) {
@@ -1992,22 +2103,43 @@
             // Login form
             const loginForm = document.getElementById('loginForm');
             if (loginForm) {
-                loginForm.addEventListener('submit', function(e) {
+                loginForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
                     const formData = new FormData(e.target);
                     const password = formData.get('password');
                     
-                    if (password === currentSettings.adminPassword) {
-                        isLoggedIn = true;
-                        closeLoginModal();
-                        showAdminModal();
-                        showMessage('Login berhasil! Selamat datang di Admin Panel.', 'success');
-                    } else {
-                        showMessage('Password salah! Silakan coba lagi.', 'error');
-                        const passwordField = document.getElementById('adminPassword');
-                        if (passwordField) {
-                            passwordField.focus();
+                    try {
+                        // Try to authenticate with API first
+                        const result = await apiCall(CONFIG.ENDPOINTS.AUTHENTICATE_ADMIN, 'POST', { password });
+                        
+                        if (result.success) {
+                            isLoggedIn = true;
+                            closeLoginModal();
+                            showAdminModal();
+                            showMessage('Login berhasil! Selamat datang di Admin Panel.', 'success');
+                        } else {
+                            showMessage('Password salah! Silakan coba lagi.', 'error');
+                            const passwordField = document.getElementById('adminPassword');
+                            if (passwordField) {
+                                passwordField.focus();
+                            }
+                        }
+                    } catch (error) {
+                        // Fallback to local authentication
+                        console.warn('API authentication failed, using local authentication:', error);
+                        
+                        if (password === currentSettings.adminPassword) {
+                            isLoggedIn = true;
+                            closeLoginModal();
+                            showAdminModal();
+                            showMessage('Login berhasil! Selamat datang di Admin Panel.', 'success');
+                        } else {
+                            showMessage('Password salah! Silakan coba lagi.', 'error');
+                            const passwordField = document.getElementById('adminPassword');
+                            if (passwordField) {
+                                passwordField.focus();
+                            }
                         }
                     }
                 });
@@ -2016,7 +2148,7 @@
             // Product form
             const productForm = document.getElementById('productForm');
             if (productForm) {
-                productForm.addEventListener('submit', function(e) {
+                productForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
                     const formData = new FormData(e.target);
@@ -2034,50 +2166,68 @@
                         createdDate: editId ? null : new Date().toISOString()
                     };
                     
-                    if (editId) {
-                        // Edit mode
-                        if (editCategory !== productData.category) {
-                            const oldCategoryProducts = categories[editCategory].products;
-                            const oldIndex = oldCategoryProducts.findIndex(p => p.id === parseInt(editId));
-                            if (oldIndex > -1) {
-                                oldCategoryProducts.splice(oldIndex, 1);
+                    try {
+                        if (editId) {
+                            // Edit mode - call update API
+                            await apiCall(CONFIG.ENDPOINTS.UPDATE_PRODUCT, 'POST', productData);
+                            
+                            // Update local data
+                            if (editCategory !== productData.category) {
+                                // Product category changed - remove from old and add to new
+                                const oldCategoryProducts = productsData[editCategory].products;
+                                const oldIndex = oldCategoryProducts.findIndex(p => p.id === parseInt(editId));
+                                if (oldIndex > -1) {
+                                    oldCategoryProducts.splice(oldIndex, 1);
+                                }
+                                
+                                if (productsData[productData.category]) {
+                                    productsData[productData.category].products.push(productData);
+                                }
+                            } else {
+                                // Same category - update in place
+                                const categoryProducts = productsData[productData.category].products;
+                                const productIndex = categoryProducts.findIndex(p => p.id === parseInt(editId));
+                                if (productIndex > -1) {
+                                    categoryProducts[productIndex] = productData;
+                                }
                             }
                             
-                            if (categories[productData.category]) {
-                                categories[productData.category].products.push(productData);
+                            showMessage(`Produk "${productData.name}" berhasil diperbarui!`, 'success');
+                            
+                            form.removeAttribute('data-edit-id');
+                            form.removeAttribute('data-edit-category');
+                            const submitBtn = form.querySelector('button[type="submit"]');
+                            if (submitBtn) {
+                                submitBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Produk';
                             }
                         } else {
-                            const categoryProducts = categories[productData.category].products;
-                            const productIndex = categoryProducts.findIndex(p => p.id === parseInt(editId));
-                            if (productIndex > -1) {
-                                categoryProducts[productIndex] = productData;
+                            // Add mode - call add API
+                            const result = await apiCall(CONFIG.ENDPOINTS.ADD_PRODUCT, 'POST', productData);
+                            
+                            if (result.id) {
+                                productData.id = result.id;
+                            }
+                            
+                            // Add to local data
+                            if (productsData[productData.category]) {
+                                productsData[productData.category].products.push(productData);
+                                showMessage(`Produk "${productData.name}" berhasil ditambahkan!`, 'success');
+                            } else {
+                                showMessage('Kategori tidak valid!', 'error');
+                                return;
                             }
                         }
                         
-                        showMessage(`Produk "${productData.name}" berhasil diperbarui!`, 'success');
+                        await loadCategories();
+                        loadProductsList();
                         
-                        form.removeAttribute('data-edit-id');
-                        form.removeAttribute('data-edit-category');
-                        const submitBtn = form.querySelector('button[type="submit"]');
-                        if (submitBtn) {
-                            submitBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Produk';
+                        if (!editId) {
+                            e.target.reset();
                         }
-                    } else {
-                        // Add mode
-                        if (categories[productData.category]) {
-                            categories[productData.category].products.push(productData);
-                            showMessage(`Produk "${productData.name}" berhasil ditambahkan!`, 'success');
-                        } else {
-                            showMessage('Kategori tidak valid!', 'error');
-                            return;
-                        }
-                    }
-                    
-                    loadCategories();
-                    loadProductsList();
-                    
-                    if (!editId) {
-                        e.target.reset();
+                        
+                    } catch (error) {
+                        console.error('Error saving product:', error);
+                        showMessage('Gagal menyimpan produk!', 'error');
                     }
                 });
             }
@@ -2085,36 +2235,55 @@
             // Settings form
             const settingsForm = document.getElementById('settingsForm');
             if (settingsForm) {
-                settingsForm.addEventListener('submit', function(e) {
+                settingsForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
                     const formData = new FormData(e.target);
+                    const settingsData = {};
                     
                     if (formData.get('storeName')) {
-                        currentSettings.storeName = formData.get('storeName');
-                        const storeNameEl = document.querySelector('.store-name');
-                        if (storeNameEl) {
-                            storeNameEl.textContent = currentSettings.storeName;
-                        }
+                        settingsData.storeName = formData.get('storeName');
                     }
                     
                     if (formData.get('whatsappNumber')) {
-                        currentSettings.whatsappNumber = formData.get('whatsappNumber');
+                        settingsData.whatsappNumber = formData.get('whatsappNumber');
                     }
                     
                     if (formData.get('contactEmail')) {
-                        currentSettings.contactEmail = formData.get('contactEmail');
+                        settingsData.contactEmail = formData.get('contactEmail');
                     }
                     
                     if (formData.get('newAdminPassword')) {
-                        currentSettings.adminPassword = formData.get('newAdminPassword');
+                        settingsData.adminPassword = formData.get('newAdminPassword');
+                    }
+                    
+                    try {
+                        // Save to API
+                        await apiCall(CONFIG.ENDPOINTS.UPDATE_SETTINGS, 'POST', settingsData);
+                        
+                        // Update local settings
+                        Object.assign(currentSettings, settingsData);
+                        
+                        // Update store name in header if changed
+                        if (settingsData.storeName) {
+                            const storeNameEl = document.querySelector('.store-name');
+                            if (storeNameEl) {
+                                storeNameEl.textContent = settingsData.storeName;
+                            }
+                        }
+                        
+                        // Clear password field
                         const passwordField = document.getElementById('newAdminPassword');
                         if (passwordField) {
                             passwordField.value = '';
                         }
+                        
+                        showMessage('Pengaturan berhasil disimpan!', 'success');
+                        
+                    } catch (error) {
+                        console.error('Error saving settings:', error);
+                        showMessage('Gagal menyimpan pengaturan!', 'error');
                     }
-                    
-                    showMessage('Pengaturan berhasil disimpan!', 'success');
                 });
             }
 
@@ -2193,17 +2362,23 @@
         });
 
         // Load data when page loads
-        window.addEventListener('load', function() {
-            loadCategories();
-            
-            setTimeout(() => {
-                showMessage('Selamat datang di XL/AXIS Store! 🎉', 'success');
-            }, 2000);
+        window.addEventListener('load', async function() {
+            try {
+                await loadSettingsFromAPI();
+                await loadCategories();
+                
+                setTimeout(() => {
+                    showMessage('Selamat datang di XL/AXIS Store! 🎉', 'success');
+                }, 2000);
+            } catch (error) {
+                console.error('Error during initial load:', error);
+                showMessage('Gagal memuat data awal. Silakan refresh halaman.', 'error');
+            }
         });
 
         // Global access
         window.store = {
-            categories,
+            productsData,
             currentSettings,
             isLoggedIn,
             loadCategories,
@@ -2217,7 +2392,8 @@
             resetProductForm,
             showTab,
             switchCategory,
-            clearSearch
+            clearSearch,
+            apiCall
         };
     </script>
 </body>
