@@ -1434,7 +1434,7 @@
         let isLoggedIn = false;
         let activeCategory = 'Official XL / AXIS';
         let currentSettings = {
-            storeName: 'XL/AXIS Store',
+            storeName: 'Lapak Auzan',
             whatsappNumber: '6281234567890',
             contactEmail: 'info@xlaxisstore.com',
             adminPassword: 'admin123'
@@ -1475,6 +1475,57 @@
         function generateWhatsAppURL(phoneNumber, message) {
             const encodedMessage = encodeURIComponent(message);
             return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        }
+
+        // Fungsi helper untuk escape string dalam onclick
+        function escapeForOnclick(str) {
+            if (!str) return '';
+            return str
+                .replace(/\\/g, '\\\\')  // Escape backslash
+                .replace(/'/g, "\\'")    // Escape single quote
+                .replace(/"/g, '\\"')    // Escape double quote
+                .replace(/\n/g, '\\n')   // Escape newline
+                .replace(/\r/g, '\\r');  // Escape carriage return
+        }
+
+        // FIXED: Fungsi buyProduct dengan parameter yang benar
+        function buyProduct(productName, price, description = '') {
+            const whatsappNumber = currentSettings.whatsappNumber;
+            const storeName = currentSettings.storeName;
+            
+            // Validasi parameter
+            if (!productName || !price) {
+                showMessage('Data produk tidak lengkap!', 'error');
+                return;
+            }
+            
+            // Bersihkan deskripsi dari karakter yang bisa merusak URL
+            const cleanDescription = description
+                .replace(/\n/g, '\n')  // Pastikan line break tetap
+                .replace(/'/g, "'")    // Ganti single quote dengan straight quote
+                .replace(/"/g, '"')    // Ganti double quote dengan straight quote
+                .trim();
+            
+            // Format pesan WhatsApp
+            const message = `Halo ${storeName}! 👋
+
+Saya ingin membeli:
+📦 *${productName}*
+💰 *${formatPrice(price)}*
+
+${cleanDescription}
+
+Mohon informasi lebih lanjut untuk proses pemesanan.
+Terima kasih! 🙏`;
+            
+            // Generate URL WhatsApp
+            const whatsappUrl = generateWhatsAppURL(whatsappNumber, message);
+            
+            // Buka WhatsApp di tab baru
+            window.open(whatsappUrl, '_blank');
+            
+            // Tampilkan pesan konfirmasi
+            showMessage(`Mengarahkan ke WhatsApp untuk pemesanan ${productName}...`, 'success');
         }
 
         // API functions
@@ -1640,13 +1691,21 @@
                             '<i class="fas fa-shopping-cart"></i> Beli Sekarang' : 
                             '<i class="fas fa-ban"></i> Tidak Tersedia';
                         
+                        // Escape strings untuk onclick handler
+                        const escapedName = escapeForOnclick(product.name);
+                        const escapedDescription = escapeForOnclick(product.description);
+                        
                         return `
-                            <div class="product-card ${cardClass}" data-product-id="${product.id}" data-search-terms="${product.name.toLowerCase()} ${product.description.toLowerCase()}">
+                            <div class="product-card ${cardClass}" 
+                                 data-product-id="${product.id}" 
+                                 data-search-terms="${product.name.toLowerCase()} ${product.description.toLowerCase()}">
                                 ${statusBadge}
                                 <div class="product-name">${product.name}</div>
                                 <div class="product-price">${formatPrice(product.price)}</div>
                                 <div class="product-description">${product.description}</div>
-                                <button class="buy-btn" ${isAvailable ? '' : 'disabled'} onclick="${isAvailable ? `buyProduct('${product.name}', ${product.price}, '${product.description.replace(/'/g, "\\'")}')` : 'showUnavailableMessage()'}">
+                                <button class="buy-btn" 
+                                        ${isAvailable ? '' : 'disabled'} 
+                                        onclick="${isAvailable ? `buyProduct('${escapedName}', ${product.price}, '${escapedDescription}')` : 'showUnavailableMessage()'}">
                                     ${buttonText}
                                 </button>
                             </div>
@@ -1801,6 +1860,7 @@
             return matches;
         }
 
+        // FIXED: Fungsi showSearchResults yang lengkap
         function showSearchResults(matches, searchTerm) {
             const categoryContent = document.getElementById('categoryContent');
             
@@ -1826,6 +1886,10 @@
                     '<i class="fas fa-shopping-cart"></i> Beli Sekarang' : 
                     '<i class="fas fa-ban"></i> Tidak Tersedia';
                 
+                // Escape strings untuk onclick handler
+                const escapedName = escapeForOnclick(product.name);
+                const escapedDescription = escapeForOnclick(product.description);
+                
                 return `
                     <div class="product-card ${cardClass}" data-product-id="${product.id}">
                         ${statusBadge}
@@ -1835,7 +1899,9 @@
                         <div class="product-name">${highlightText(product.name, searchTerm)}</div>
                         <div class="product-price">${formatPrice(product.price)}</div>
                         <div class="product-description">${highlightText(product.description, searchTerm)}</div>
-                        <button class="buy-btn" ${isAvailable ? '' : 'disabled'} onclick="${isAvailable ? `buyProduct('${product.name}', ${product.price}, '${product.description.replace(/'/g, "\\'")}')` : 'showUnavailableMessage()'}">
+                        <button class="buy-btn" 
+                                ${isAvailable ? '' : 'disabled'} 
+                                onclick="${isAvailable ? `buyProduct('${escapedName}', ${product.price}, '${escapedDescription}')` : 'showUnavailableMessage()'}">
                             ${buttonText}
                         </button>
                     </div>
@@ -2269,20 +2335,7 @@
                 event.target.classList.add('active');
             }
         }
-
-        // FIXED: Fungsi buyProduct dengan parameter description
-        function buyProduct(productName, price, description = '') {
-            const whatsappNumber = currentSettings.whatsappNumber;
-            const storeName = currentSettings.storeName;
-            
-            const message = `Halo ${storeName}! 👋\n\nSaya ingin membeli:\n📦 *${product.name}*\n💰 *${formatPrice(product.price)}*\n\n${cleanDescription}\n\nMohon informasi lebih lanjut untuk proses pemesanan.\nTerima kasih! 🙏`;
-            
-            const whatsappUrl = generateWhatsAppURL(whatsappNumber, message);
-            window.open(whatsappUrl, '_blank');
-            
-            showMessage(`Mengarahkan ke WhatsApp untuk pemesanan ${productName}...`, 'success');
-        }
-
+        
         // Event listeners setup
         function setupEventListeners() {
             // Login form
@@ -2554,7 +2607,7 @@
                 await loadCategories();
                 
                 setTimeout(() => {
-                    showMessage('Selamat datang di XL/AXIS Store! 🎉', 'success');
+                    showMessage('Selamat datang di Lapak Auzan! 🎉', 'success');
                 }, 2000);
             } catch (error) {
                 console.error('Error during initial load:', error);
@@ -2581,7 +2634,8 @@
             switchCategory,
             clearSearch,
             showUnavailableMessage,
-            apiCall
+            apiCall,
+            escapeForOnclick
         };
     </script>
 </body>
